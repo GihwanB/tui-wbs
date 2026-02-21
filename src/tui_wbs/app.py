@@ -204,6 +204,7 @@ class WBSApp(App):
         self._kanban_selected_id: str = ""
         self._autosave_timer: object | None = None
         self._settings: dict = {}
+        self._scroll_syncing: bool = False
         self._holidays: list = []
         # Build latin key → action map from BINDINGS for Korean input mapping
         self._latin_to_action: dict[str, str] = {}
@@ -614,19 +615,47 @@ class WBSApp(App):
                 if gantt_view._highlighted_row != event.row_index:
                     gantt_view._highlighted_row = event.row_index
                     gantt_view.refresh()
+                # Sync DataTable scroll_y to GanttView
+                dt = self.query_one(WBSTable).query_one("#wbs-data-table", SyncedDataTable)
+                gantt_view.scroll_y = dt.scroll_y
             except Exception:
                 pass
 
+    def _reset_scroll_syncing(self) -> None:
+        self._scroll_syncing = False
+
     def on_synced_data_table_scroll_changed(self, event: SyncedDataTable.ScrollChanged) -> None:
         """Synchronize table vertical scroll to Gantt view."""
+        if self._scroll_syncing:
+            return
         view = self._get_active_view()
         if view and view.type == "table+gantt":
             try:
+                self._scroll_syncing = True
+                from tui_wbs.widgets.gantt_chart import GanttView
+
                 gantt = self.query_one(GanttChart)
-                gantt_view = gantt.query_one("#gantt-view")
+                gantt_view = gantt.query_one("#gantt-view", GanttView)
                 gantt_view.scroll_y = event.scroll_y
             except Exception:
                 pass
+            # Delay flag reset so bounce-back messages are caught
+            self.set_timer(0.05, self._reset_scroll_syncing)
+
+    def on_gantt_view_scroll_y_changed(self, event) -> None:
+        """Synchronize Gantt view vertical scroll to table."""
+        if self._scroll_syncing:
+            return
+        view = self._get_active_view()
+        if view and view.type == "table+gantt":
+            try:
+                self._scroll_syncing = True
+                dt = self.query_one(WBSTable).query_one("#wbs-data-table", SyncedDataTable)
+                dt.scroll_y = event.scroll_y
+            except Exception:
+                pass
+            # Delay flag reset so bounce-back messages are caught
+            self.set_timer(0.05, self._reset_scroll_syncing)
 
     def _update_title(self) -> None:
         project_name = self.config.name or self.project_dir.name
