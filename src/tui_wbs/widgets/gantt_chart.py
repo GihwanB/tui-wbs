@@ -690,13 +690,12 @@ class GanttView(ScrollView):
         if row_band:
             band, base = base, band
 
-        # Highlight style for cursor row
-        highlight = (row_y == self._highlighted_row)
-        if highlight:
-            hl_style = Style(bgcolor=theme.GANTT_HIGHLIGHT_BG.resolve(dark))
-            band = hl_style
-            base = hl_style
-            weekend_style = None  # highlight takes priority
+        # Highlight border for cursor row (underline-only, no overline)
+        hl_row = self._highlighted_row
+        needs_border = (
+            hl_row >= 0
+            and row_y in (hl_row - 1, hl_row)  # 항상 2줄만: 위 1행 + 커서 행
+        )
 
         if node.milestone and node.start:
             ms_col = self._date_to_col(node.start)
@@ -709,9 +708,7 @@ class GanttView(ScrollView):
                     segments.append(Segment("│", today_style + bg))
                 else:
                     segments.append(Segment(" ", bg))
-            return Strip(segments)
-
-        if not node.start:
+        elif not node.start:
             segments = []
             for c in range(width):
                 bg = self._resolve_bg(c, band, base, cw, weekend_style)
@@ -719,43 +716,56 @@ class GanttView(ScrollView):
                     segments.append(Segment("│", today_style + bg))
                 else:
                     segments.append(Segment(" ", bg))
-            return Strip(segments)
-
-        start_col = self._date_to_col(node.start)
-        end_date = node.end or (node.start + timedelta(days=1))
-        end_col = self._date_to_col(end_date)
-        bar_len = max(1, end_col - start_col)
-
-        # Color by status
-        if node.status == Status.DONE:
-            bar_style = Style(color=theme.GANTT_BAR_DONE.resolve(dark))
-        elif node.status == Status.IN_PROGRESS:
-            bar_style = Style(color=theme.GANTT_BAR_IN_PROGRESS.resolve(dark))
         else:
-            bar_style = Style(color=theme.GANTT_BAR_TODO.resolve(dark), dim=True)
+            start_col = self._date_to_col(node.start)
+            end_date = node.end or (node.start + timedelta(days=1))
+            end_col = self._date_to_col(end_date)
+            bar_len = max(1, end_col - start_col)
 
-        # Progress fill
-        progress = node.progress or 0
-        filled = int(bar_len * progress / 100) if progress else 0
-
-        # Dependency arrow: show → before bar start
-        has_deps = bool(node.depends_list)
-
-        for c in range(width):
-            bg = self._resolve_bg(c, band, base, cw, weekend_style)
-            if has_deps and c == start_col - 1 and start_col > 0:
-                segments.append(Segment("→", dep_style + bg))
-            elif start_col <= c < start_col + bar_len:
-                pos = c - start_col
-                if pos < filled:
-                    segments.append(Segment("█", bar_style + bg))
-                else:
-                    segments.append(Segment("░", bar_style + bg))
-            elif c == today_col:
-                segments.append(Segment("│", today_style + bg))
+            # Color by status
+            if node.status == Status.DONE:
+                bar_style = Style(color=theme.GANTT_BAR_DONE.resolve(dark))
+            elif node.status == Status.IN_PROGRESS:
+                bar_style = Style(color=theme.GANTT_BAR_IN_PROGRESS.resolve(dark))
             else:
-                segments.append(Segment(" ", bg))
+                bar_style = Style(color=theme.GANTT_BAR_TODO.resolve(dark), dim=True)
 
+            # Progress fill
+            progress = node.progress or 0
+            filled = int(bar_len * progress / 100) if progress else 0
+
+            # Dependency arrow: show → before bar start
+            has_deps = bool(node.depends_list)
+
+            for c in range(width):
+                bg = self._resolve_bg(c, band, base, cw, weekend_style)
+                if has_deps and c == start_col - 1 and start_col > 0:
+                    segments.append(Segment("→", dep_style + bg))
+                elif start_col <= c < start_col + bar_len:
+                    pos = c - start_col
+                    if pos < filled:
+                        segments.append(Segment("█", bar_style + bg))
+                    else:
+                        segments.append(Segment("░", bar_style + bg))
+                elif c == today_col:
+                    segments.append(Segment("│", today_style + bg))
+                else:
+                    segments.append(Segment(" ", bg))
+
+        # 공통 후처리: 커서 주변 행에 underline 테두리 적용
+        if needs_border:
+            _border_color = theme.GANTT_HIGHLIGHT_BORDER_COLOR.resolve(dark)
+            thickness = theme.GANTT_HIGHLIGHT_BORDER_THICKNESS
+            use_double = thickness >= 2
+            hl_space = Style(underline2=use_double, underline=not use_double, color=_border_color)
+            hl_content = Style(underline2=use_double, underline=not use_double)
+            segments = [
+                Segment(
+                    s.text,
+                    (hl_space + s.style) if s.text.strip() == "" else (s.style + hl_content),
+                )
+                for s in segments
+            ]
         return Strip(segments)
 
     def _date_to_col(self, d: date) -> int:

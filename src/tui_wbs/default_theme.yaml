@@ -17,9 +17,11 @@ gantt:
   bar_in_progress:  { dark: blue, light: dark_blue }
   bar_todo:         { dark: white, light: grey50 }
   band_bg:          { dark: "#262642", light: "#c8c8d8" }
-  base_bg:          { dark: "#AAAAAA", light: "#efefef" }
+  base_bg:          { dark: "#D49F9F", light: "#efefef" }
   # base_bg:          { dark: "#121212", light: "#efefef" }
-  highlight_bg:     { dark: "#505088", light: "#9090d0" }
+  highlight_bg:               { dark: "#505088", light: "#9090d0" }
+  highlight_border_color:     { dark: "#505088", light: "#9090d0" }
+  highlight_border_thickness: 4
   weekend_bg:       { dark: "#2a1a1a", light: "#e8d8d8" }
   holiday_bg:       { dark: "#3a2a1a", light: "#f0e0c8" }
 

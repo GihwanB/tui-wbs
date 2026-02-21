@@ -48,6 +48,8 @@ GANTT_BAR_TODO: ColorPair
 GANTT_BAND_BG: ColorPair
 GANTT_BASE_BG: ColorPair
 GANTT_HIGHLIGHT_BG: ColorPair
+GANTT_HIGHLIGHT_BORDER_COLOR: ColorPair
+GANTT_HIGHLIGHT_BORDER_THICKNESS: int
 GANTT_WEEKEND_BG: ColorPair
 GANTT_HOLIDAY_BG: ColorPair
 
@@ -136,6 +138,12 @@ def _apply(data: dict) -> None:
     mod.GANTT_BAND_BG = _pair(gantt.get("band_bg", {}))
     mod.GANTT_BASE_BG = _pair(gantt.get("base_bg", {}))
     mod.GANTT_HIGHLIGHT_BG = _pair(gantt.get("highlight_bg", {}))
+    mod.GANTT_HIGHLIGHT_BORDER_COLOR = _pair(
+        gantt.get("highlight_border_color", gantt.get("highlight_bg", {}))
+    )
+    mod.GANTT_HIGHLIGHT_BORDER_THICKNESS = int(
+        gantt.get("highlight_border_thickness", 1)
+    )
     mod.GANTT_WEEKEND_BG = _pair(gantt.get("weekend_bg", {"dark": "#2a1a1a", "light": "#e8d8d8"}))
     mod.GANTT_HOLIDAY_BG = _pair(gantt.get("holiday_bg", {"dark": "#3a2a1a", "light": "#f0e0c8"}))
 
