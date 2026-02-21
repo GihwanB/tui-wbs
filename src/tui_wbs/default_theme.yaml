@@ -1,0 +1,37 @@
+status:
+  todo:         { dark: white, light: white }
+  in_progress:  { dark: yellow, light: yellow }
+  done:         { dark: green, light: green }
+
+priority:
+  high:   { dark: red, light: red }
+  medium: { dark: yellow, light: yellow }
+  low:    { dark: cyan, light: cyan }
+
+gantt:
+  header:           { dark: cyan, light: dark_cyan }
+  today_marker:     { dark: yellow, light: dark_goldenrod }
+  dependency_arrow: { dark: yellow, light: dark_goldenrod }
+  milestone:        { dark: magenta, light: dark_magenta }
+  bar_done:         { dark: green, light: dark_green }
+  bar_in_progress:  { dark: blue, light: dark_blue }
+  bar_todo:         { dark: white, light: grey50 }
+  band_bg:          { dark: "#262642", light: "#c8c8d8" }
+  base_bg:          { dark: "#AAAAAA", light: "#efefef" }
+  # base_bg:          { dark: "#121212", light: "#efefef" }
+  highlight_bg:     { dark: "#505088", light: "#9090d0" }
+  weekend_bg:       { dark: "#2a1a1a", light: "#e8d8d8" }
+  holiday_bg:       { dark: "#3a2a1a", light: "#f0e0c8" }
+
+progress:
+  - { min: 100, dark: green, light: green }
+  - { min: 60,  dark: blue,  light: blue }
+  - { min: 30,  dark: yellow, light: yellow }
+  - { min: 0,   dark: red,   light: red }
+
+ui:
+  overdue_title:     { dark: red, light: red }
+  milestone:         { dark: magenta, light: magenta }
+  statusbar_demo:    { dark: cyan, light: cyan }
+  statusbar_warning: { dark: yellow, light: yellow }
+  warning_icon:      { dark: yellow, light: yellow }

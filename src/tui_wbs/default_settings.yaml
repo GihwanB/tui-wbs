@@ -1,0 +1,36 @@
+# TUI-WBS Default Settings
+# Override by creating .tui-wbs/settings.yaml in your project directory.
+
+gantt:
+  col_widths:
+    day: 2
+    week: 7
+    week2: 8
+    month: 6
+    quarter: 6
+    year: 6
+
+date_format: "YYYY-MM-DD"
+
+columns:
+  order:
+    - title
+    - status
+    - priority
+    - assignee
+    - duration
+    - start
+    - end
+    - progress
+
+holidays: []
+# Example:
+# holidays:
+#   - "2026-01-01"
+#   - "2026-03-01"
+#   - "2026-05-05"
+#   - "2026-06-06"
+#   - "2026-08-15"
+#   - "2026-10-03"
+#   - "2026-10-09"
+#   - "2026-12-25"
