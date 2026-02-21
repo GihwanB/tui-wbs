@@ -32,7 +32,6 @@ COL_WIDTH_MAP: dict[str, int] = {
     "year": 6,
 }
 
-BAND_AMOUNT = 0.18  # darken 정도 (18%)
 
 
 def _band_bg(char_col: int, band_style: Style, base_style: Style, col_width: int = COL_WIDTH) -> Style:
@@ -225,28 +224,11 @@ class GanttHeader(Widget):
 
     @property
     def _band_style(self) -> Style:
-        dark = self._is_dark
-        try:
-            _, bg = self.background_colors
-            if bg.a < 0.1 or (dark and bg.brightness > 0.5) or (not dark and bg.brightness < 0.5):
-                return Style(bgcolor=theme.GANTT_BAND_BG.resolve(dark))
-            if dark:
-                return Style(bgcolor=bg.lighten(BAND_AMOUNT).rich_color)
-            else:
-                return Style(bgcolor=bg.darken(BAND_AMOUNT).rich_color)
-        except Exception:
-            return Style(bgcolor=theme.GANTT_BAND_BG.resolve(dark))
+        return Style(bgcolor=theme.GANTT_BAND_BG.resolve(self._is_dark))
 
     @property
     def _base_style(self) -> Style:
-        dark = self._is_dark
-        try:
-            _, bg = self.background_colors
-            if bg.a < 0.1 or (dark and bg.brightness > 0.5) or (not dark and bg.brightness < 0.5):
-                return Style(bgcolor=theme.GANTT_BASE_BG.resolve(dark))
-            return Style(bgcolor=bg.rich_color)
-        except Exception:
-            return Style(bgcolor=theme.GANTT_BASE_BG.resolve(dark))
+        return Style(bgcolor=theme.GANTT_BASE_BG.resolve(self._is_dark))
 
     def render_line(self, y: int) -> Strip:
         width = max(self.size.width, self._chart_width)
@@ -640,28 +622,11 @@ class GanttView(ScrollView):
 
     @property
     def _band_style(self) -> Style:
-        dark = self._is_dark
-        try:
-            _, bg = self.background_colors
-            if bg.a < 0.1 or (dark and bg.brightness > 0.5) or (not dark and bg.brightness < 0.5):
-                return Style(bgcolor=theme.GANTT_BAND_BG.resolve(dark))
-            if dark:
-                return Style(bgcolor=bg.lighten(BAND_AMOUNT).rich_color)
-            else:
-                return Style(bgcolor=bg.darken(BAND_AMOUNT).rich_color)
-        except Exception:
-            return Style(bgcolor=theme.GANTT_BAND_BG.resolve(dark))
+        return Style(bgcolor=theme.GANTT_BAND_BG.resolve(self._is_dark))
 
     @property
     def _base_style(self) -> Style:
-        dark = self._is_dark
-        try:
-            _, bg = self.background_colors
-            if bg.a < 0.1 or (dark and bg.brightness > 0.5) or (not dark and bg.brightness < 0.5):
-                return Style(bgcolor=theme.GANTT_BASE_BG.resolve(dark))
-            return Style(bgcolor=bg.rich_color)
-        except Exception:
-            return Style(bgcolor=theme.GANTT_BASE_BG.resolve(dark))
+        return Style(bgcolor=theme.GANTT_BASE_BG.resolve(self._is_dark))
 
     def _resolve_bg(self, c: int, band: Style, base: Style, cw: int, weekend_style: Style | None) -> Style:
         """Resolve background style for a character column, with holiday/weekend overlay."""
