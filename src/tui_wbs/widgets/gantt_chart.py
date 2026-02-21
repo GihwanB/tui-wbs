@@ -520,6 +520,13 @@ class GanttView(ScrollView):
             super().__init__()
             self.scroll_x = scroll_x
 
+    class ScrollYChanged(Message):
+        """Emitted when vertical scroll position changes."""
+
+        def __init__(self, scroll_y: float) -> None:
+            super().__init__()
+            self.scroll_y = scroll_y
+
     DEFAULT_CSS = """
     GanttView {
         height: 1fr;
@@ -570,6 +577,12 @@ class GanttView(ScrollView):
         if all_dates:
             self._date_start = min(all_dates) - timedelta(days=self._days_per_col * 2)
             self._date_end = max(all_dates) + timedelta(days=self._days_per_col * 4)
+
+            # week/week2 스케일: 블록이 ISO 주(월-일)와 일치하도록 월요일 정렬
+            if self._scale in ("week", "week2"):
+                days_since_monday = self._date_start.weekday()  # 0=Mon, 6=Sun
+                if days_since_monday != 0:
+                    self._date_start -= timedelta(days=days_since_monday)
         else:
             self._date_start = today - timedelta(days=30)
             self._date_end = today + timedelta(days=60)
@@ -590,9 +603,16 @@ class GanttView(ScrollView):
     def watch_scroll_x(self, old: float, new: float) -> None:
         self.post_message(self.ScrollXChanged(new))
 
+    def watch_scroll_y(self, old: float, new: float) -> None:
+        self.post_message(self.ScrollYChanged(new))
+
     def render_line(self, y: int) -> Strip:
         scroll_w = self.virtual_size.width if self.virtual_size.width > 0 else self.size.width
         width = max(self.size.width, scroll_w)
+
+        # Apply vertical scroll offset (ScrollView doesn't offset y automatically)
+        virtual_y = y + int(self.scroll_y)
+
         if not self._rows:
             if y == 0:
                 text = Text("  No Gantt data", style="dim")
@@ -601,8 +621,8 @@ class GanttView(ScrollView):
 
         chart_w = max(20, width)
 
-        # y=0 is the first data row (no header rows in GanttView)
-        if y < 0 or y >= len(self._rows):
+        # virtual_y maps to the data row index
+        if virtual_y < 0 or virtual_y >= len(self._rows):
             # Fill empty rows with banded background instead of blank
             band = self._band_style
             base = self._base_style
@@ -610,8 +630,8 @@ class GanttView(ScrollView):
             segments = [Segment(" ", _band_bg(c, band, base, cw)) for c in range(width)]
             return Strip(segments)
 
-        node, depth = self._rows[y]
-        return self._render_bar(node, depth, chart_w, y)
+        node, depth = self._rows[virtual_y]
+        return self._render_bar(node, depth, chart_w, virtual_y)
 
     @property
     def _is_dark(self) -> bool:
