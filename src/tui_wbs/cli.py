@@ -50,10 +50,9 @@ def run(ctx, path: str) -> None:
     demo = ctx.obj["demo"]
 
     if demo:
-        import tempfile
+        from tui_wbs.demo_data import get_demo_dir
 
-        project_dir = Path(tempfile.gettempdir()) / "tui-wbs-demo"
-        project_dir.mkdir(exist_ok=True)
+        project_dir = get_demo_dir()
         app = WBSApp(project_dir=project_dir, no_color=no_color, demo_mode=True)
     else:
         project_dir = Path(path).resolve()
@@ -74,3 +73,12 @@ def init_theme_cmd(path: str) -> None:
     except FileExistsError as e:
         click.echo(f"Already exists: {e}", err=True)
         raise SystemExit(1)
+
+
+@main.command("refresh-demo")
+def refresh_demo_cmd() -> None:
+    """Shift demo dates so today falls within the active phase."""
+    from tui_wbs.demo_data import refresh_demo_dates
+
+    refresh_demo_dates()
+    click.echo("Demo dates refreshed to today.")

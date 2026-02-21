@@ -26,6 +26,9 @@ tui-wbs = "tui_wbs.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/tui_wbs"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/tui_wbs/demo/.tui-wbs" = "tui_wbs/demo/.tui-wbs"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]

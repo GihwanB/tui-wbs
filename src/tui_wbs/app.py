@@ -236,17 +236,14 @@ class WBSApp(App):
         self._finish_load()
 
     def _load_demo_project(self) -> None:
-        from tui_wbs.demo_data import get_demo_content
-        from tui_wbs.parser import parse_markdown
+        from tui_wbs.demo_data import get_demo_dir
 
-        content = get_demo_content()
-        doc = parse_markdown(content, "demo.wbs.md")
-        self.config = ProjectConfig(name="TaskFlow App v2.0 (Demo)")
-        self.project = WBSProject(
-            dir_path=self.project_dir,
-            documents=[doc],
-            config=self.config,
-        )
+        demo_dir = get_demo_dir()
+        self.config = load_config(demo_dir)
+        self.config.name = self.config.name or "TaskFlow App v2.0 (Demo)"
+        custom_fields = get_custom_field_ids(self.config)
+        self.project = parse_project(demo_dir, custom_fields or None)
+        self.project.config = self.config
         self._finish_load()
 
     def _on_sample_confirmed(self, confirmed: bool) -> None:
