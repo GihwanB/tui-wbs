@@ -60,6 +60,42 @@ def run(ctx, path: str) -> None:
     app.run()
 
 
+@main.command("init")
+@click.argument("path", default=".", type=click.Path())
+@click.option("--name", prompt="Project name", default="My Project", help="프로젝트 이름")
+def init_cmd(path: str, name: str) -> None:
+    """Initialize a new WBS project (config.toml + template .wbs.md)."""
+    from tui_wbs.app import _build_sample_content
+    from tui_wbs.config import save_config
+    from tui_wbs.models import ProjectConfig
+
+    project_dir = Path(path).resolve()
+
+    # Check if .wbs.md files already exist
+    existing = list(project_dir.glob("*.wbs.md"))
+    if existing:
+        names = ", ".join(f.name for f in existing)
+        click.echo(f"WBS files already exist: {names}", err=True)
+        raise SystemExit(1)
+
+    # Create directory if needed
+    project_dir.mkdir(parents=True, exist_ok=True)
+
+    # Create config.toml
+    config = ProjectConfig(name=name)
+    config.ensure_default_view()
+    save_config(project_dir, config)
+    click.echo(f"Created {project_dir / '.tui-wbs' / 'config.toml'}")
+
+    # Create template .wbs.md
+    wbs_path = project_dir / "project.wbs.md"
+    wbs_path.write_text(_build_sample_content(name), encoding="utf-8")
+    click.echo(f"Created {wbs_path}")
+
+    click.echo(f"\nProject initialized at {project_dir}")
+    click.echo("Run 'tui-wbs' to open the project.")
+
+
 @main.command("init-theme")
 @click.argument("path", default=".", type=click.Path(exists=True))
 def init_theme_cmd(path: str) -> None:

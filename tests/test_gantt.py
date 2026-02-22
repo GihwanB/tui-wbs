@@ -17,19 +17,29 @@ def gantt_project(tmp_path):
     """Create a project with date-bearing tasks spanning a wide range for Gantt tests."""
     (tmp_path / "project.wbs.md").write_text(
         "# Gantt Project\n"
-        "<!-- status: IN_PROGRESS | start: 2026-01-01 | end: 2026-12-31 -->\n"
+        "| status | start | end |\n"
+        "| --- | --- | --- |\n"
+        "| IN_PROGRESS | 2026-01-01 | 2026-12-31 |\n"
         "\n"
         "## Phase 1\n"
-        "<!-- status: TODO | start: 2026-01-01 | end: 2026-06-30 | duration: 180d -->\n"
+        "| status | start | end | duration |\n"
+        "| --- | --- | --- | --- |\n"
+        "| TODO | 2026-01-01 | 2026-06-30 | 180d |\n"
         "\n"
         "### Task 1.1\n"
-        "<!-- status: TODO | start: 2026-01-01 | end: 2026-03-31 | duration: 90d -->\n"
+        "| status | start | end | duration |\n"
+        "| --- | --- | --- | --- |\n"
+        "| TODO | 2026-01-01 | 2026-03-31 | 90d |\n"
         "\n"
         "### Task 1.2\n"
-        "<!-- status: TODO | start: 2026-04-01 | end: 2026-06-30 | duration: 90d -->\n"
+        "| status | start | end | duration |\n"
+        "| --- | --- | --- | --- |\n"
+        "| TODO | 2026-04-01 | 2026-06-30 | 90d |\n"
         "\n"
         "## Phase 2\n"
-        "<!-- status: TODO | start: 2026-07-01 | end: 2026-12-31 | duration: 180d -->\n",
+        "| status | start | end | duration |\n"
+        "| --- | --- | --- | --- |\n"
+        "| TODO | 2026-07-01 | 2026-12-31 | 180d |\n",
         encoding="utf-8",
     )
     return tmp_path

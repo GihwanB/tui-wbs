@@ -26,16 +26,24 @@ def sample_project(tmp_path):
     """Create a sample project directory with WBS files."""
     (tmp_path / "project.wbs.md").write_text(
         "# My Project\n"
-        "<!-- status: IN_PROGRESS | assignee: Gihwan | priority: HIGH -->\n"
+        "| status | assignee | priority |\n"
+        "| --- | --- | --- |\n"
+        "| IN_PROGRESS | Gihwan | HIGH |\n"
         "\n"
         "## Phase 1\n"
-        "<!-- status: TODO | assignee: Jane -->\n"
+        "| status | assignee |\n"
+        "| --- | --- |\n"
+        "| TODO | Jane |\n"
         "\n"
         "### Task 1.1\n"
-        "<!-- status: DONE | assignee: Jane | duration: 2d -->\n"
+        "| status | assignee | duration |\n"
+        "| --- | --- | --- |\n"
+        "| DONE | Jane | 2d |\n"
         "\n"
         "### Task 1.2\n"
-        "<!-- status: IN_PROGRESS | assignee: John -->\n",
+        "| status | assignee |\n"
+        "| --- | --- |\n"
+        "| IN_PROGRESS | John |\n",
         encoding="utf-8",
     )
     return tmp_path
@@ -48,13 +56,19 @@ def date_project(tmp_path):
     yesterday = today - timedelta(days=1)
     (tmp_path / "project.wbs.md").write_text(
         f"# Project\n"
-        f"<!-- status: TODO | start: {today.isoformat()} | duration: 5d -->\n"
+        f"| status | start | duration |\n"
+        f"| --- | --- | --- |\n"
+        f"| TODO | {today.isoformat()} | 5d |\n"
         f"\n"
         f"## Task A\n"
-        f"<!-- status: TODO | start: {yesterday.isoformat()} -->\n"
+        f"| status | start |\n"
+        f"| --- | --- |\n"
+        f"| TODO | {yesterday.isoformat()} |\n"
         f"\n"
         f"## Task B\n"
-        f"<!-- status: TODO | start: {today.isoformat()} | end: {(today + timedelta(days=10)).isoformat()} -->\n",
+        f"| status | start | end |\n"
+        f"| --- | --- | --- |\n"
+        f"| TODO | {today.isoformat()} | {(today + timedelta(days=10)).isoformat()} |\n",
         encoding="utf-8",
     )
     return tmp_path
@@ -366,9 +380,10 @@ class TestDefaultColumns:
 
 class TestDemoDataLabelModule:
     def _parse_demo(self):
-        from tui_wbs.demo_data import get_demo_content
+        from tui_wbs.demo_data import get_demo_dir
         from tui_wbs.parser import parse_markdown
-        content = get_demo_content()
+        demo_file = get_demo_dir() / "demo.wbs.md"
+        content = demo_file.read_text(encoding="utf-8")
         return parse_markdown(content, "demo.wbs.md")
 
     def test_all_nodes_have_label(self):
@@ -414,16 +429,24 @@ def aggregation_project(tmp_path):
     """Project for testing parent date aggregation."""
     (tmp_path / "project.wbs.md").write_text(
         "# Root\n"
-        "<!-- status: TODO -->\n"
+        "| status |\n"
+        "| --- |\n"
+        "| TODO |\n"
         "\n"
         "## Parent\n"
-        "<!-- status: TODO | start: 2025-01-01 | end: 2025-01-10 -->\n"
+        "| status | start | end |\n"
+        "| --- | --- | --- |\n"
+        "| TODO | 2025-01-01 | 2025-01-10 |\n"
         "\n"
         "### Child A\n"
-        "<!-- status: TODO | start: 2025-01-05 | end: 2025-01-15 -->\n"
+        "| status | start | end |\n"
+        "| --- | --- | --- |\n"
+        "| TODO | 2025-01-05 | 2025-01-15 |\n"
         "\n"
         "### Child B\n"
-        "<!-- status: TODO | start: 2025-01-03 | end: 2025-01-20 -->\n",
+        "| status | start | end |\n"
+        "| --- | --- | --- |\n"
+        "| TODO | 2025-01-03 | 2025-01-20 |\n",
         encoding="utf-8",
     )
     return tmp_path

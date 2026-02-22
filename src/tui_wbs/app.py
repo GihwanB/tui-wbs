@@ -59,29 +59,52 @@ _KOREAN_TO_LATIN: dict[str, str] = {
 _AUTOSAVE_DELAY = 2.0  # seconds
 
 
-SAMPLE_WBS_CONTENT = """\
-# My Project
-<!-- status: IN_PROGRESS | priority: HIGH | duration: 30d -->
+def _build_sample_content(name: str = "My Project") -> str:
+    """Build sample WBS content with today-based start/end dates."""
+    from datetime import date, timedelta
+
+    today = date.today()
+
+    def d(offset: int) -> str:
+        return (today + timedelta(days=offset)).isoformat()
+
+    return f"""\
+# {name}
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| IN_PROGRESS | HIGH | {d(0)} | {d(30)} |
 
 Project overview memo.
 
 ## Phase 1: Design
-<!-- status: TODO | duration: 5d | priority: HIGH -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | HIGH | {d(0)} | {d(5)} |
 
 ### Task 1.1: Requirements Analysis
-<!-- status: TODO | duration: 2d | priority: HIGH -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | HIGH | {d(0)} | {d(2)} |
 
 ### Task 1.2: Technical Review
-<!-- status: TODO | duration: 3d | priority: MEDIUM -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | MEDIUM | {d(2)} | {d(5)} |
 
 ## Phase 2: Implementation
-<!-- status: TODO | duration: 20d | priority: HIGH -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | HIGH | {d(5)} | {d(25)} |
 
 ### Task 2.1: Core Development
-<!-- status: TODO | duration: 10d | priority: HIGH -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | HIGH | {d(5)} | {d(15)} |
 
 ### Task 2.2: Testing
-<!-- status: TODO | duration: 5d | priority: MEDIUM -->
+| status | priority | start | end |
+| --- | --- | --- | --- |
+| TODO | MEDIUM | {d(15)} | {d(25)} |
 """
 
 
@@ -249,7 +272,8 @@ class WBSApp(App):
     def _on_sample_confirmed(self, confirmed: bool) -> None:
         if confirmed:
             sample_path = self.project_dir / "project.wbs.md"
-            sample_path.write_text(SAMPLE_WBS_CONTENT, encoding="utf-8")
+            sample_path.write_text(_build_sample_content(), encoding="utf-8")
+            save_config(self.project_dir, self.config)
             custom_fields = get_custom_field_ids(self.config)
             self.project = parse_project(self.project_dir, custom_fields or None)
             self.project.config = self.config

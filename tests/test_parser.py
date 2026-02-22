@@ -47,7 +47,12 @@ class TestBasicParsing:
 
 class TestMetadataParsing:
     def test_basic_metadata(self):
-        md = "# Task\n<!-- status: DONE | assignee: Jane | duration: 5d | priority: HIGH -->\n"
+        md = (
+            "# Task\n"
+            "| status | assignee | duration | priority |\n"
+            "| --- | --- | --- | --- |\n"
+            "| DONE | Jane | 5d | HIGH |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
         assert node.status == Status.DONE
@@ -56,33 +61,58 @@ class TestMetadataParsing:
         assert node.priority == Priority.HIGH
 
     def test_date_fields(self):
-        md = "# Task\n<!-- start: 2026-03-01 | end: 2026-03-15 -->\n"
+        md = (
+            "# Task\n"
+            "| start | end |\n"
+            "| --- | --- |\n"
+            "| 2026-03-01 | 2026-03-15 |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
         assert node.start == date(2026, 3, 1)
         assert node.end == date(2026, 3, 15)
 
     def test_milestone(self):
-        md = "# MS\n<!-- milestone: true | start: 2026-04-01 -->\n"
+        md = (
+            "# MS\n"
+            "| milestone | start |\n"
+            "| --- | --- |\n"
+            "| true | 2026-04-01 |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
         assert node.milestone is True
         assert node.start == date(2026, 4, 1)
 
     def test_depends_semicolon(self):
-        md = "# Task\n<!-- depends: Task A; Task B -->\n"
+        md = (
+            "# Task\n"
+            "| depends |\n"
+            "| --- |\n"
+            "| Task A; Task B |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
         assert node.depends == "Task A; Task B"
         assert node.depends_list == ["Task A", "Task B"]
 
     def test_progress(self):
-        md = "# Task\n<!-- progress: 75 -->\n"
+        md = (
+            "# Task\n"
+            "| progress |\n"
+            "| --- |\n"
+            "| 75 |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].progress == 75
 
     def test_custom_fields(self):
-        md = "# Task\n<!-- team: Backend | risk: High -->\n"
+        md = (
+            "# Task\n"
+            "| team | risk |\n"
+            "| --- | --- |\n"
+            "| Backend | High |\n"
+        )
         doc = parse_markdown(md, "test.md", known_custom_fields={"team", "risk"})
         node = doc.root_nodes[0]
         assert node.custom_fields["team"] == "Backend"
@@ -91,13 +121,29 @@ class TestMetadataParsing:
 
 class TestMemo:
     def test_memo_parsing(self):
-        md = "# Task\n<!-- status: TODO -->\n\nThis is a memo\nSecond line\n\n## Next\n"
+        md = (
+            "# Task\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
+            "\n"
+            "This is a memo\n"
+            "Second line\n"
+            "\n"
+            "## Next\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert "This is a memo" in doc.root_nodes[0].memo
         assert "Second line" in doc.root_nodes[0].memo
 
     def test_no_memo(self):
-        md = "# Task\n<!-- status: TODO -->\n## Next\n"
+        md = (
+            "# Task\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
+            "## Next\n"
+        )
         doc = parse_markdown(md, "test.md")
         # Memo might have empty lines between heading and next heading
         assert doc.root_nodes[0].memo.strip() == ""
@@ -110,33 +156,58 @@ class TestEdgeCases:
         node = doc.root_nodes[0]
         assert node.status == Status.TODO
         assert node.priority == Priority.MEDIUM
-        assert node._raw_meta_line is None
+        assert node._raw_meta_lines == ()
 
     def test_invalid_status(self):
-        md = "# Task\n<!-- status: PENDING -->\n"
+        md = (
+            "# Task\n"
+            "| status |\n"
+            "| --- |\n"
+            "| PENDING |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].status == Status.TODO
         assert any("Invalid status" in str(w) for w in doc.parse_warnings)
 
     def test_invalid_priority(self):
-        md = "# Task\n<!-- priority: CRITICAL -->\n"
+        md = (
+            "# Task\n"
+            "| priority |\n"
+            "| --- |\n"
+            "| CRITICAL |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].priority == Priority.MEDIUM
         assert any("Invalid priority" in str(w) for w in doc.parse_warnings)
 
     def test_invalid_date(self):
-        md = "# Task\n<!-- start: not-a-date -->\n"
+        md = (
+            "# Task\n"
+            "| start |\n"
+            "| --- |\n"
+            "| not-a-date |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].start is None
         assert any("Invalid date" in str(w) for w in doc.parse_warnings)
 
     def test_empty_assignee(self):
-        md = "# Task\n<!-- assignee: -->\n"
+        md = (
+            "# Task\n"
+            "| assignee |\n"
+            "| --- |\n"
+            "|  |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].assignee == ""
 
     def test_special_chars_in_value(self):
-        md = "# Task\n<!-- assignee: John O'Brien -->\n"
+        md = (
+            "# Task\n"
+            "| assignee |\n"
+            "| --- |\n"
+            "| John O'Brien |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].assignee == "John O'Brien"
 
@@ -160,35 +231,65 @@ class TestEdgeCases:
         assert len(doc.root_nodes) == 0
 
     def test_only_metadata_after_heading(self):
-        """Only the first metadata comment is parsed."""
-        md = "# Task\n<!-- status: DONE -->\n<!-- priority: HIGH -->\n"
+        """Only the first metadata table is parsed."""
+        md = (
+            "# Task\n"
+            "| status |\n"
+            "| --- |\n"
+            "| DONE |\n"
+            "| priority |\n"
+            "| --- |\n"
+            "| HIGH |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
         assert node.status == Status.DONE
-        # Second comment should not be parsed as metadata
+        # Second table should not be parsed as metadata
         assert node.priority == Priority.MEDIUM  # default
 
-    def test_metadata_not_right_after_heading(self):
-        md = "# Task\n\nSome text\n<!-- status: DONE -->\n"
+    def test_metadata_with_blank_line_after_heading(self):
+        """Table after blank line should still be parsed."""
+        md = (
+            "# Task\n"
+            "\n"
+            "| status |\n"
+            "| --- |\n"
+            "| DONE |\n"
+        )
         doc = parse_markdown(md, "test.md")
         node = doc.root_nodes[0]
-        # Metadata in body should still be parsed (first comment)
         assert node.status == Status.DONE
 
     def test_progress_clamped(self):
-        md = "# Task\n<!-- progress: 150 -->\n"
+        md = (
+            "# Task\n"
+            "| progress |\n"
+            "| --- |\n"
+            "| 150 |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].progress == 100
 
     def test_progress_negative(self):
-        md = "# Task\n<!-- progress: -10 -->\n"
+        md = (
+            "# Task\n"
+            "| progress |\n"
+            "| --- |\n"
+            "| -10 |\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert doc.root_nodes[0].progress == 0
 
 
 class TestDependsValidation:
     def test_invalid_depends_reference(self):
-        md = "# Task A\n<!-- depends: NonExistent -->\n# Task B\n"
+        md = (
+            "# Task A\n"
+            "| depends |\n"
+            "| --- |\n"
+            "| NonExistent |\n"
+            "# Task B\n"
+        )
         doc = parse_markdown(md, "test.md")
         # We need to use parse_project for depends validation
         from tui_wbs.models import WBSProject
@@ -207,7 +308,16 @@ class TestDependsValidation:
         assert any("Duplicate title" in str(w) for w in project.parse_warnings)
 
     def test_circular_dependency(self):
-        md = "# A\n<!-- depends: B -->\n# B\n<!-- depends: A -->\n"
+        md = (
+            "# A\n"
+            "| depends |\n"
+            "| --- |\n"
+            "| B |\n"
+            "# B\n"
+            "| depends |\n"
+            "| --- |\n"
+            "| A |\n"
+        )
         doc = parse_markdown(md, "test.md")
         from tui_wbs.models import WBSProject
         project = WBSProject(dir_path=Path("."), documents=[doc])

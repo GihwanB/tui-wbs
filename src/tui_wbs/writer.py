@@ -9,39 +9,43 @@ from pathlib import Path
 from tui_wbs.models import WBSDocument, WBSNode
 
 
-def _build_meta_comment(node: WBSNode) -> str:
-    """Build a metadata HTML comment string from a node."""
-    parts: list[str] = []
+def _build_meta_table(node: WBSNode) -> list[str]:
+    """Build metadata as markdown table lines (header, separator, data)."""
+    parts: dict[str, str] = {}
 
-    parts.append(f"status: {node.status.value}")
+    parts["status"] = node.status.value
 
     if node.milestone:
-        parts.append("milestone: true")
+        parts["milestone"] = "true"
 
     if node.assignee:
-        parts.append(f"assignee: {node.assignee}")
+        parts["assignee"] = node.assignee
 
     if node.duration:
-        parts.append(f"duration: {node.duration}")
+        parts["duration"] = node.duration
 
-    parts.append(f"priority: {node.priority.value}")
+    parts["priority"] = node.priority.value
 
     if node.start:
-        parts.append(f"start: {node.start.isoformat()}")
+        parts["start"] = node.start.isoformat()
 
     if node.end:
-        parts.append(f"end: {node.end.isoformat()}")
+        parts["end"] = node.end.isoformat()
 
     if node.depends:
-        parts.append(f"depends: {node.depends}")
+        parts["depends"] = node.depends
 
     if node.progress is not None:
-        parts.append(f"progress: {node.progress}")
+        parts["progress"] = str(node.progress)
 
     for key, value in sorted(node.custom_fields.items()):
-        parts.append(f"{key}: {value}")
+        parts[key] = value
 
-    return "<!-- " + " | ".join(parts) + " -->"
+    keys = list(parts.keys())
+    header = "| " + " | ".join(keys) + " |"
+    sep = "| " + " | ".join("---" for _ in keys) + " |"
+    values = "| " + " | ".join(parts.values()) + " |"
+    return [header, sep, values]
 
 
 def _serialize_node(node: WBSNode, lines: list[str]) -> None:
@@ -54,15 +58,15 @@ def _serialize_node(node: WBSNode, lines: list[str]) -> None:
     if not node._meta_modified:
         # Round-trip: output raw lines exactly as they were
         lines.append(node._raw_heading_line)
-        if node._raw_meta_line is not None:
-            lines.append(node._raw_meta_line)
+        for meta_line in node._raw_meta_lines:
+            lines.append(meta_line)
         for body_line in node._raw_body_lines:
             lines.append(body_line)
     else:
         # Modified node: regenerate heading and metadata
         heading_prefix = "#" * node.level
         lines.append(f"{heading_prefix} {node.title}")
-        lines.append(_build_meta_comment(node))
+        lines.extend(_build_meta_table(node))
 
         # Memo as body
         if node.memo:

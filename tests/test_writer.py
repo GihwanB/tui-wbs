@@ -15,29 +15,50 @@ class TestSerializeUnmodified:
     """Test that unmodified documents are serialized identically (round-trip)."""
 
     def test_no_change(self):
-        md = "# Project\n<!-- status: TODO -->\n\nSome memo\n"
+        md = (
+            "# Project\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
+            "\n"
+            "Some memo\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert serialize_document(doc) == md
 
     def test_preserves_whitespace(self):
-        md = "# Project\n<!-- status: TODO -->\n\n\nDouble blank\n"
+        md = (
+            "# Project\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
+            "\n"
+            "\n"
+            "Double blank\n"
+        )
         doc = parse_markdown(md, "test.md")
         assert serialize_document(doc) == md
 
     def test_complex_document(self):
         md = (
             "# Root\n"
-            "<!-- status: IN_PROGRESS | assignee: Gihwan | priority: HIGH -->\n"
+            "| status | assignee | priority |\n"
+            "| --- | --- | --- |\n"
+            "| IN_PROGRESS | Gihwan | HIGH |\n"
             "\n"
             "Root memo\n"
             "\n"
             "## Child 1\n"
-            "<!-- status: DONE | assignee: Jane -->\n"
+            "| status | assignee |\n"
+            "| --- | --- |\n"
+            "| DONE | Jane |\n"
             "\n"
             "Child memo\n"
             "\n"
             "### Grandchild\n"
-            "<!-- status: TODO -->\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
             "\n"
             "## Child 2\n"
         )
@@ -57,11 +78,17 @@ class TestSerializeModified:
         doc.root_nodes[0] = updated
 
         result = serialize_document(doc)
-        assert "<!-- status: DONE" in result
+        assert "| status |" in result
+        assert "| DONE |" in result
         assert "# Task" in result
 
     def test_modified_preserves_custom_fields(self):
-        md = "# Task\n<!-- team: Backend -->\n"
+        md = (
+            "# Task\n"
+            "| team |\n"
+            "| --- |\n"
+            "| Backend |\n"
+        )
         doc = parse_markdown(md, "test.md")
         doc.modified = True
 
@@ -75,13 +102,19 @@ class TestSerializeModified:
         doc.root_nodes[0] = updated
 
         result = serialize_document(doc)
-        assert "team: Backend" in result
-        assert "status: IN_PROGRESS" in result
+        assert "team" in result
+        assert "Backend" in result
+        assert "IN_PROGRESS" in result
 
 
 class TestWriteDocument:
     def test_write_creates_file(self, tmp_path):
-        md = "# Test\n<!-- status: TODO -->\n"
+        md = (
+            "# Test\n"
+            "| status |\n"
+            "| --- |\n"
+            "| TODO |\n"
+        )
         doc = parse_markdown(md, str(tmp_path / "test.wbs.md"))
         doc.file_path = tmp_path / "test.wbs.md"
         doc.modified = False  # No actual changes

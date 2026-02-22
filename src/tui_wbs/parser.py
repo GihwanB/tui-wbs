@@ -17,7 +17,8 @@ from tui_wbs.models import (
 
 # Regex patterns
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.+)$")
-META_COMMENT_RE = re.compile(r"^<!--\s*(.+?)\s*-->$")
+META_TABLE_ROW_RE = re.compile(r"^\|(.+)\|\s*$")
+META_TABLE_SEP_RE = re.compile(r"^\|[\s\-:|]+\|\s*$")
 
 
 def _parse_date(value: str, file_path: str, line_num: int, warnings: list[ParseWarning]) -> date | None:
@@ -57,29 +58,24 @@ def _parse_bool(value: str) -> bool:
     return value.strip().lower() in ("true", "yes", "1")
 
 
-def _parse_metadata(
-    meta_str: str,
+def _parse_table_metadata(
+    header_line: str,
+    data_line: str,
     file_path: str,
     line_num: int,
     warnings: list[ParseWarning],
-    known_custom_fields: set[str] | None = None,
 ) -> dict[str, str]:
-    """Parse '<!-- key: value | key: value -->' content into a dict."""
+    """Parse markdown table header + data row into a metadata dict."""
     result: dict[str, str] = {}
-    # Split by | delimiter
-    parts = meta_str.split("|")
-    for part in parts:
-        part = part.strip()
-        if not part:
-            continue
-        # Split on first colon only
-        colon_idx = part.find(":")
-        if colon_idx == -1:
-            warnings.append(ParseWarning(file_path, line_num, f"Invalid metadata field (no colon): '{part}'"))
-            continue
-        key = part[:colon_idx].strip().lower()
-        value = part[colon_idx + 1 :].strip()
-        result[key] = value
+    header_match = META_TABLE_ROW_RE.match(header_line.strip())
+    data_match = META_TABLE_ROW_RE.match(data_line.strip())
+    if not header_match or not data_match:
+        return result
+    keys = [k.strip().lower() for k in header_match.group(1).split("|")]
+    values = [v.strip() for v in data_match.group(1).split("|")]
+    for key, value in zip(keys, values):
+        if key:
+            result[key] = value
     return result
 
 
@@ -87,7 +83,7 @@ def _build_node(
     title: str,
     level: int,
     heading_line: str,
-    meta_line: str | None,
+    meta_lines: list[str],
     meta_dict: dict[str, str],
     body_lines: list[str],
     file_path: str,
@@ -146,7 +142,7 @@ def _build_node(
         custom_fields=custom_fields,
         source_file=file_path,
         _raw_heading_line=heading_line,
-        _raw_meta_line=meta_line,
+        _raw_meta_lines=tuple(meta_lines),
         _raw_body_lines=tuple(body_lines),
         _meta_modified=False,
     )
@@ -158,10 +154,12 @@ def parse_markdown(content: str, file_path: str, known_custom_fields: set[str] |
     lines = content.split("\n")
 
     # Collect sections: each section starts with a heading
-    sections: list[dict] = []  # {line_num, level, title, heading_line, meta_line, meta_dict, body_lines}
+    sections: list[dict] = []  # {line_num, level, title, heading_line, meta_lines, meta_dict, body_lines}
     current_section: dict | None = None
 
-    for i, line in enumerate(lines):
+    i = 0
+    while i < len(lines):
+        line = lines[i]
         heading_match = HEADING_RE.match(line)
         if heading_match:
             # Save previous section
@@ -175,26 +173,48 @@ def parse_markdown(content: str, file_path: str, known_custom_fields: set[str] |
                 "level": level,
                 "title": title,
                 "heading_line": line,
-                "meta_line": None,
+                "meta_lines": [],
                 "meta_dict": {},
                 "body_lines": [],
                 "meta_found": False,
             }
-        elif current_section is not None:
-            # Check for metadata comment (only first one after heading)
-            meta_match = META_COMMENT_RE.match(line.strip())
-            if meta_match and not current_section["meta_found"]:
-                current_section["meta_line"] = line
+            i += 1
+
+            # Lookahead: skip blank lines, then check for 3-line table
+            lookahead = i
+            blank_lines: list[str] = []
+            while lookahead < len(lines) and lines[lookahead].strip() == "":
+                blank_lines.append(lines[lookahead])
+                lookahead += 1
+
+            # Check if next 3 lines form a metadata table (header | separator | data)
+            if (
+                lookahead + 2 < len(lines)
+                and META_TABLE_ROW_RE.match(lines[lookahead].strip())
+                and META_TABLE_SEP_RE.match(lines[lookahead + 1].strip())
+                and META_TABLE_ROW_RE.match(lines[lookahead + 2].strip())
+                and not META_TABLE_SEP_RE.match(lines[lookahead + 2].strip())
+            ):
+                header_line = lines[lookahead]
+                sep_line = lines[lookahead + 1]
+                data_line = lines[lookahead + 2]
+                current_section["meta_lines"] = [header_line, sep_line, data_line]
                 current_section["meta_found"] = True
-                current_section["meta_dict"] = _parse_metadata(
-                    meta_match.group(1),
-                    file_path,
-                    i + 1,
-                    warnings,
-                    known_custom_fields,
+                current_section["meta_dict"] = _parse_table_metadata(
+                    header_line, data_line, file_path, lookahead + 1, warnings,
                 )
+                # Add blank lines between heading and table as body
+                current_section["body_lines"].extend(blank_lines)
+                i = lookahead + 3
             else:
-                current_section["body_lines"].append(line)
+                # No table found; blank lines go to body
+                current_section["body_lines"].extend(blank_lines)
+                i = lookahead
+        elif current_section is not None:
+            current_section["body_lines"].append(line)
+            i += 1
+        else:
+            i += 1
 
     # Don't forget last section
     if current_section is not None:
@@ -216,7 +236,7 @@ def parse_markdown(content: str, file_path: str, known_custom_fields: set[str] |
             title=sec["title"],
             level=sec["level"],
             heading_line=sec["heading_line"],
-            meta_line=sec["meta_line"],
+            meta_lines=sec["meta_lines"],
             meta_dict=sec["meta_dict"],
             body_lines=sec["body_lines"],
             file_path=file_path,

@@ -1,135 +1,197 @@
 <!-- demo-anchor: 2026-02-22 -->
 # TaskFlow App v2.0
-<!-- status: IN_PROGRESS | priority: HIGH | assignee: PM | start: 2026-01-23 | end: 2026-04-23 | progress: 35 | label: planning | module: project-mgmt -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| IN_PROGRESS | PM | HIGH | 2026-01-23 | 2026-04-23 | 35 | planning | project-mgmt |
 
 Enterprise task management platform — full rewrite with modern stack.
 
 ## Phase 1: Discovery & Planning
-<!-- status: DONE | priority: HIGH | assignee: PM | start: 2026-01-23 | end: 2026-02-06 | progress: 100 | label: planning | module: project-mgmt -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | PM | HIGH | 2026-01-23 | 2026-02-06 | 100 | planning | project-mgmt |
 
 ### Stakeholder Interviews
-<!-- status: DONE | priority: HIGH | assignee: PM | start: 2026-01-23 | end: 2026-01-28 | progress: 100 | label: planning | module: project-mgmt -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | PM | HIGH | 2026-01-23 | 2026-01-28 | 100 | planning | project-mgmt |
 
 Conducted 12 interviews across 4 departments.
 
 ### Competitive Analysis
-<!-- status: DONE | priority: MEDIUM | assignee: Alice | start: 2026-01-25 | end: 2026-01-31 | progress: 100 | label: planning | module: project-mgmt -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Alice | MEDIUM | 2026-01-25 | 2026-01-31 | 100 | planning | project-mgmt |
 
 Reviewed 8 competing products; summarized in wiki.
 
 ### Requirements Document
-<!-- status: DONE | priority: HIGH | assignee: PM | start: 2026-01-29 | end: 2026-02-04 | depends: Stakeholder Interviews; Competitive Analysis | progress: 100 | label: planning | module: project-mgmt -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | PM | HIGH | 2026-01-29 | 2026-02-04 | Stakeholder Interviews; Competitive Analysis | 100 | planning | project-mgmt |
 
 40-page PRD approved by steering committee.
 
 ### Planning Milestone
-<!-- status: DONE | priority: HIGH | assignee: PM | start: 2026-02-06 | end: 2026-02-06 | milestone: true | depends: Requirements Document | label: planning | module: project-mgmt -->
+| status | milestone | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | true | PM | HIGH | 2026-02-06 | 2026-02-06 | Requirements Document | planning | project-mgmt |
 
 ## Phase 2: UX Design
-<!-- status: DONE | priority: HIGH | assignee: Alice | start: 2026-02-04 | end: 2026-02-18 | progress: 100 | label: design | module: ux -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Alice | HIGH | 2026-02-04 | 2026-02-18 | 100 | design | ux |
 
 ### Wireframes
-<!-- status: DONE | priority: HIGH | assignee: Alice | start: 2026-02-04 | end: 2026-02-10 | progress: 100 | label: design | module: ux -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Alice | HIGH | 2026-02-04 | 2026-02-10 | 100 | design | ux |
 
 Low-fi wireframes for all 15 screens.
 
 ### Design System
-<!-- status: DONE | priority: MEDIUM | assignee: Alice | start: 2026-02-08 | end: 2026-02-14 | progress: 100 | label: design | module: ux -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Alice | MEDIUM | 2026-02-08 | 2026-02-14 | 100 | design | ux |
 
 Tokens, components, and Figma library published.
 
 ### Usability Testing
-<!-- status: DONE | priority: HIGH | assignee: Alice | start: 2026-02-12 | end: 2026-02-17 | depends: Wireframes | progress: 100 | label: design | module: ux -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Alice | HIGH | 2026-02-12 | 2026-02-17 | Wireframes | 100 | design | ux |
 
 5 participants, 23 findings, 8 critical fixes applied.
 
 ### Design Milestone
-<!-- status: DONE | priority: HIGH | assignee: Alice | start: 2026-02-18 | end: 2026-02-18 | milestone: true | depends: Usability Testing; Design System | label: design | module: ux -->
+| status | milestone | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | true | Alice | HIGH | 2026-02-18 | 2026-02-18 | Usability Testing; Design System | design | ux |
 
 ## Phase 3: Core Development
-<!-- status: IN_PROGRESS | priority: HIGH | assignee: Bob | start: 2026-02-14 | end: 2026-03-24 | progress: 40 | label: backend | module: api -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| IN_PROGRESS | Bob | HIGH | 2026-02-14 | 2026-03-24 | 40 | backend | api |
 
 ### API Gateway Setup
-<!-- status: DONE | priority: HIGH | assignee: Bob | start: 2026-02-14 | end: 2026-02-19 | progress: 100 | label: backend | module: api -->
+| status | assignee | priority | start | end | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Bob | HIGH | 2026-02-14 | 2026-02-19 | 100 | backend | api |
 
 Express + OpenAPI spec with rate limiting.
 
 ### Authentication Service
-<!-- status: DONE | priority: HIGH | assignee: Carol | start: 2026-02-16 | end: 2026-02-21 | depends: API Gateway Setup | progress: 100 | label: backend | module: auth -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DONE | Carol | HIGH | 2026-02-16 | 2026-02-21 | API Gateway Setup | 100 | backend | auth |
 
 OAuth2 + JWT with refresh token rotation.
 
 ### Task CRUD Backend
-<!-- status: IN_PROGRESS | priority: HIGH | assignee: Bob | start: 2026-02-20 | end: 2026-03-02 | depends: Authentication Service | progress: 60 | label: backend | module: api -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| IN_PROGRESS | Bob | HIGH | 2026-02-20 | 2026-03-02 | Authentication Service | 60 | backend | api |
 
 REST endpoints for task lifecycle management.
 
 ### Real-time Sync Engine
-<!-- status: IN_PROGRESS | priority: MEDIUM | assignee: Carol | start: 2026-02-22 | end: 2026-03-08 | depends: Task CRUD Backend | progress: 20 | label: backend | module: realtime -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| IN_PROGRESS | Carol | MEDIUM | 2026-02-22 | 2026-03-08 | Task CRUD Backend | 20 | backend | realtime |
 
 WebSocket-based live collaboration with CRDT conflict resolution.
 
 ### Dashboard Frontend
-<!-- status: IN_PROGRESS | priority: HIGH | assignee: Dave | start: 2026-02-21 | end: 2026-03-06 | depends: API Gateway Setup | progress: 30 | label: frontend | module: ui -->
+| status | assignee | priority | start | end | depends | progress | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| IN_PROGRESS | Dave | HIGH | 2026-02-21 | 2026-03-06 | API Gateway Setup | 30 | frontend | ui |
 
 React + TanStack Query, responsive layout with dark mode.
 
 ### Notification System
-<!-- status: TODO | priority: MEDIUM | assignee: Carol | start: 2026-03-02 | end: 2026-03-12 | depends: Real-time Sync Engine | label: backend | module: realtime -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Carol | MEDIUM | 2026-03-02 | 2026-03-12 | Real-time Sync Engine | backend | realtime |
 
 Email, push, and in-app notifications with preference center.
 
 ### Search & Filtering
-<!-- status: TODO | priority: LOW | assignee: Dave | start: 2026-03-04 | end: 2026-03-14 | depends: Task CRUD Backend | label: backend | module: search -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Dave | LOW | 2026-03-04 | 2026-03-14 | Task CRUD Backend | backend | search |
 
 Full-text search with Elasticsearch, saved filter presets.
 
 ### Dev Complete Milestone
-<!-- status: TODO | priority: HIGH | assignee: Bob | start: 2026-03-24 | end: 2026-03-24 | milestone: true | depends: Notification System; Search & Filtering; Dashboard Frontend | label: backend | module: api -->
+| status | milestone | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | true | Bob | HIGH | 2026-03-24 | 2026-03-24 | Notification System; Search & Filtering; Dashboard Frontend | backend | api |
 
 ## Phase 4: Quality Assurance
-<!-- status: TODO | priority: HIGH | assignee: Eve | start: 2026-03-16 | end: 2026-04-08 | label: testing | module: qa -->
+| status | assignee | priority | start | end | label | module |
+| --- | --- | --- | --- | --- | --- | --- |
+| TODO | Eve | HIGH | 2026-03-16 | 2026-04-08 | testing | qa |
 
 ### Unit Test Suite
-<!-- status: TODO | priority: HIGH | assignee: Eve | start: 2026-03-16 | end: 2026-03-24 | depends: Task CRUD Backend | label: testing | module: qa -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Eve | HIGH | 2026-03-16 | 2026-03-24 | Task CRUD Backend | testing | qa |
 
 Target 90% coverage for all backend services.
 
 ### Integration Tests
-<!-- status: TODO | priority: HIGH | assignee: Eve | start: 2026-03-22 | end: 2026-04-01 | depends: Unit Test Suite | label: testing | module: qa -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Eve | HIGH | 2026-03-22 | 2026-04-01 | Unit Test Suite | testing | qa |
 
 End-to-end API contract tests with Pact.
 
 ### Performance Testing
-<!-- status: TODO | priority: MEDIUM | assignee: Bob | start: 2026-03-26 | end: 2026-04-03 | depends: Integration Tests | label: testing | module: qa -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Bob | MEDIUM | 2026-03-26 | 2026-04-03 | Integration Tests | testing | qa |
 
 Load testing with k6; target p99 < 200ms.
 
 ### Security Audit
-<!-- status: TODO | priority: HIGH | assignee: Carol | start: 2026-03-29 | end: 2026-04-05 | depends: Integration Tests | label: testing | module: qa -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Carol | HIGH | 2026-03-29 | 2026-04-05 | Integration Tests | testing | qa |
 
 OWASP top-10 review and penetration testing.
 
 ### QA Milestone
-<!-- status: TODO | priority: HIGH | assignee: Eve | start: 2026-04-08 | end: 2026-04-08 | milestone: true | depends: Performance Testing; Security Audit | label: testing | module: qa -->
+| status | milestone | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | true | Eve | HIGH | 2026-04-08 | 2026-04-08 | Performance Testing; Security Audit | testing | qa |
 
 ## Phase 5: Launch
-<!-- status: TODO | priority: HIGH | assignee: PM | start: 2026-04-08 | end: 2026-04-23 | label: ops | module: devops -->
+| status | assignee | priority | start | end | label | module |
+| --- | --- | --- | --- | --- | --- | --- |
+| TODO | PM | HIGH | 2026-04-08 | 2026-04-23 | ops | devops |
 
 ### Staging Deployment
-<!-- status: TODO | priority: HIGH | assignee: Bob | start: 2026-04-08 | end: 2026-04-13 | depends: QA Milestone | label: ops | module: devops -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Bob | HIGH | 2026-04-08 | 2026-04-13 | QA Milestone | ops | devops |
 
 Blue-green deployment to staging environment.
 
 ### Documentation & Training
-<!-- status: TODO | priority: MEDIUM | assignee: Alice | start: 2026-04-09 | end: 2026-04-17 | depends: Staging Deployment | label: docs | module: docs -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Alice | MEDIUM | 2026-04-09 | 2026-04-17 | Staging Deployment | docs | docs |
 
 User guide, API docs, and 3 training sessions scheduled.
 
 ### Production Rollout
-<!-- status: TODO | priority: HIGH | assignee: Bob | start: 2026-04-15 | end: 2026-04-21 | depends: Documentation & Training; Staging Deployment | label: ops | module: devops -->
+| status | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | Bob | HIGH | 2026-04-15 | 2026-04-21 | Documentation & Training; Staging Deployment | ops | devops |
 
 Canary release: 10% → 50% → 100% over 5 days.
 
 ### Launch Milestone
-<!-- status: TODO | priority: HIGH | assignee: PM | start: 2026-04-23 | end: 2026-04-23 | milestone: true | depends: Production Rollout | label: ops | module: devops -->
+| status | milestone | assignee | priority | start | end | depends | label | module |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TODO | true | PM | HIGH | 2026-04-23 | 2026-04-23 | Production Rollout | ops | devops |

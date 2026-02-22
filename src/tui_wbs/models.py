@@ -86,7 +86,7 @@ class WBSNode:
 
     # Raw content preservation for round-trip
     _raw_heading_line: str = ""
-    _raw_meta_line: str | None = None
+    _raw_meta_lines: tuple[str, ...] = ()
     _raw_body_lines: tuple[str, ...] = ()
     _meta_modified: bool = False
 

@@ -25,16 +25,24 @@ def sample_project(tmp_path):
     """Create a sample project directory with WBS files."""
     (tmp_path / "project.wbs.md").write_text(
         "# My Project\n"
-        "<!-- status: IN_PROGRESS | assignee: Gihwan | priority: HIGH -->\n"
+        "| status | assignee | priority |\n"
+        "| --- | --- | --- |\n"
+        "| IN_PROGRESS | Gihwan | HIGH |\n"
         "\n"
         "## Phase 1\n"
-        "<!-- status: TODO | assignee: Jane -->\n"
+        "| status | assignee |\n"
+        "| --- | --- |\n"
+        "| TODO | Jane |\n"
         "\n"
         "### Task 1.1\n"
-        "<!-- status: DONE | assignee: Jane | duration: 2d -->\n"
+        "| status | assignee | duration |\n"
+        "| --- | --- | --- |\n"
+        "| DONE | Jane | 2d |\n"
         "\n"
         "### Task 1.2\n"
-        "<!-- status: IN_PROGRESS | assignee: John | depends: Task 1.1 -->\n",
+        "| status | assignee | depends |\n"
+        "| --- | --- | --- |\n"
+        "| IN_PROGRESS | John | Task 1.1 |\n",
         encoding="utf-8",
     )
     return tmp_path
@@ -597,7 +605,11 @@ async def test_no_color_sets_env(tmp_path, monkeypatch):
     import os
     monkeypatch.delenv("NO_COLOR", raising=False)
     (tmp_path / "project.wbs.md").write_text(
-        "# Test\n<!-- status: TODO -->\n", encoding="utf-8"
+        "# Test\n"
+        "| status |\n"
+        "| --- |\n"
+        "| TODO |\n",
+        encoding="utf-8",
     )
     app = WBSApp(project_dir=tmp_path, no_color=True)
     assert os.environ.get("NO_COLOR") == "1"
@@ -611,7 +623,11 @@ async def test_no_color_false_no_env(tmp_path, monkeypatch):
     import os
     monkeypatch.delenv("NO_COLOR", raising=False)
     (tmp_path / "project.wbs.md").write_text(
-        "# Test\n<!-- status: TODO -->\n", encoding="utf-8"
+        "# Test\n"
+        "| status |\n"
+        "| --- |\n"
+        "| TODO |\n",
+        encoding="utf-8",
     )
     _ = WBSApp(project_dir=tmp_path, no_color=False)
     assert os.environ.get("NO_COLOR") is None

@@ -87,10 +87,14 @@ def test_provider_registered():
 def sample_project(tmp_path):
     (tmp_path / "project.wbs.md").write_text(
         "# My Project\n"
-        "<!-- status: TODO -->\n"
+        "| status |\n"
+        "| --- |\n"
+        "| TODO |\n"
         "\n"
         "## Task 1\n"
-        "<!-- status: TODO -->\n",
+        "| status |\n"
+        "| --- |\n"
+        "| TODO |\n",
         encoding="utf-8",
     )
     return tmp_path
