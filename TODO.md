@@ -74,3 +74,13 @@
 - [x] Date format에 MM-DD 옵션 추가 — DATE_FORMAT_PRESETS에 "MM-DD": "%m-%d" 추가
 - [x] Gantt 커서 하이라이트 추적 버그 수정 — 테이블 커서 이동 시 Gantt 하이라이트가 따라오지 않는 문제. 원인: RowHighlighted→CellHighlighted 교체 + 핸들러 이름 불일치(`on_wbs_table_*`→`on_wbstable_*`) 수정
 - [x] Gantt 수평 스크롤 동작 안 함 — GanttView CSS에 overflow-x/y: auto 추가하여 수정
+- [ ] Gantt 테이블 마우스 휠 Y스크롤 동기화 — 테이블 Y스크롤을 마우스 휠로 움직일 때 Gantt 차트 Y스크롤도 함께 이동
+- [ ] Gantt 뷰 전환 시 포커스가 3번으로 가는 버그 수정 — view mode를 Gantt로 바꾸면 포커스가 3번 행으로 자동 이동하는 문제
+- [ ] Gantt 테이블에 ID 컬럼 추가 및 ID 기본 정렬 — Gantt 테이블에도 ID 표시, 기본 sort는 ID로
+- [ ] Table 컬럼 너비 조정 팝업 + Alt+←/→ 증감 — 포커스된 컬럼에서 단축키로 너비 수정 팝업, Alt+Left/Right로 증감
+- [ ] View mode 버튼 높이 2칸→1칸으로 축소
+- [ ] Gantt 비율 기반 너비 증감 기능 추가 및 w2 삭제 — 비율 증감에 따라 너비가 증감하는 기능 추가, w2 삭제
+- [ ] Gantt 테이블에 progress 컬럼 추가
+- [ ] Enter 키 status/priority 변경 제거, Alt+Up/Down으로 변경 — Enter로 status/priority 순차 변경 제거, Alt+Up/Down으로 수정
+- [ ] 컬럼 너비 설정 영속 저장 — 너비 수정 데이터가 저장되어 재실행해도 유지되는지 확인, 없으면 구현
+- [ ] 기본 날짜 표시 포맷을 MM-DD로 변경
