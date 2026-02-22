@@ -1,0 +1,41 @@
+name: Catppuccin Macchiato
+dark: true
+
+app:
+  base_bg: "#24273a"
+
+status:
+  todo:        "#a5adcb"
+  in_progress: "#eed49f"
+  done:        "#a6da95"
+
+priority:
+  high:   "#ed8796"
+  medium: "#eed49f"
+  low:    "#8aadf4"
+
+gantt:
+  header:           "#8aadf4"
+  today_marker:     "#eed49f"
+  dependency_arrow: "#f5a97f"
+  milestone:        "#c6a0f6"
+  bar_done:         "#a6da95"
+  bar_in_progress:  "#8aadf4"
+  bar_todo:         "#5b6078"
+  band_bg:          "#24273a"
+  highlight_bg:     "#494d64"
+  weekend_bg:       "#363a4f"
+  holiday_bg:       "#3b2f44"
+
+progress:
+  - { min: 100, color: "#a6da95" }
+  - { min: 60,  color: "#8aadf4" }
+  - { min: 30,  color: "#eed49f" }
+  - { min: 0,   color: "#ed8796" }
+
+ui:
+  overdue_title:     "#ed8796"
+  milestone:         "#c6a0f6"
+  statusbar_demo:    "#91d7e3"
+  statusbar_warning: "#eed49f"
+  warning_icon:      "#f5a97f"

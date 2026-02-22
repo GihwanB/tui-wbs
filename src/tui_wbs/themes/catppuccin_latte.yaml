@@ -1,0 +1,41 @@
+name: Catppuccin Latte
+dark: false
+
+app:
+  base_bg: "#eff1f5"
+
+status:
+  todo:        "#6c6f85"
+  in_progress: "#df8e1d"
+  done:        "#40a02b"
+
+priority:
+  high:   "#d20f39"
+  medium: "#df8e1d"
+  low:    "#1e66f5"
+
+gantt:
+  header:           "#1e66f5"
+  today_marker:     "#df8e1d"
+  dependency_arrow: "#fe640b"
+  milestone:        "#8839ef"
+  bar_done:         "#40a02b"
+  bar_in_progress:  "#1e66f5"
+  bar_todo:         "#acb0be"
+  band_bg:          "#eff1f5"
+  highlight_bg:     "#bcc0cc"
+  weekend_bg:       "#dce0e8"
+  holiday_bg:       "#f2d5cf"
+
+progress:
+  - { min: 100, color: "#40a02b" }
+  - { min: 60,  color: "#1e66f5" }
+  - { min: 30,  color: "#df8e1d" }
+  - { min: 0,   color: "#d20f39" }
+
+ui:
+  overdue_title:     "#d20f39"
+  milestone:         "#8839ef"
+  statusbar_demo:    "#04a5e5"
+  statusbar_warning: "#df8e1d"
+  warning_icon:      "#fe640b"

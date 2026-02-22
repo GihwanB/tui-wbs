@@ -1,0 +1,41 @@
+name: "Catppuccin Frapp\xE9"
+dark: true
+
+app:
+  base_bg: "#303446"
+
+status:
+  todo:        "#a5adce"
+  in_progress: "#e5c890"
+  done:        "#a6d189"
+
+priority:
+  high:   "#e78284"
+  medium: "#e5c890"
+  low:    "#8caaee"
+
+gantt:
+  header:           "#8caaee"
+  today_marker:     "#e5c890"
+  dependency_arrow: "#ef9f76"
+  milestone:        "#ca9ee6"
+  bar_done:         "#a6d189"
+  bar_in_progress:  "#8caaee"
+  bar_todo:         "#626880"
+  band_bg:          "#303446"
+  highlight_bg:     "#51576d"
+  weekend_bg:       "#414559"
+  holiday_bg:       "#453848"
+
+progress:
+  - { min: 100, color: "#a6d189" }
+  - { min: 60,  color: "#8caaee" }
+  - { min: 30,  color: "#e5c890" }
+  - { min: 0,   color: "#e78284" }
+
+ui:
+  overdue_title:     "#e78284"
+  milestone:         "#ca9ee6"
+  statusbar_demo:    "#99d1db"
+  statusbar_warning: "#e5c890"
+  warning_icon:      "#ef9f76"

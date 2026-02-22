@@ -1,0 +1,41 @@
+name: Catppuccin Mocha
+dark: true
+
+app:
+  base_bg: "#1e1e2e"
+
+status:
+  todo:        "#a6adc8"
+  in_progress: "#f9e2af"
+  done:        "#a6e3a1"
+
+priority:
+  high:   "#f38ba8"
+  medium: "#f9e2af"
+  low:    "#89b4fa"
+
+gantt:
+  header:           "#89b4fa"
+  today_marker:     "#f9e2af"
+  dependency_arrow: "#fab387"
+  milestone:        "#cba6f7"
+  bar_done:         "#a6e3a1"
+  bar_in_progress:  "#89b4fa"
+  bar_todo:         "#585b70"
+  band_bg:          "#1e1e2e"
+  highlight_bg:     "#45475a"
+  weekend_bg:       "#313244"
+  holiday_bg:       "#352a3a"
+
+progress:
+  - { min: 100, color: "#a6e3a1" }
+  - { min: 60,  color: "#89b4fa" }
+  - { min: 30,  color: "#f9e2af" }
+  - { min: 0,   color: "#f38ba8" }
+
+ui:
+  overdue_title:     "#f38ba8"
+  milestone:         "#cba6f7"
+  statusbar_demo:    "#89dceb"
+  statusbar_warning: "#f9e2af"
+  warning_icon:      "#fab387"

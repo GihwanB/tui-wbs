@@ -1,0 +1,41 @@
+name: One Light
+dark: false
+
+app:
+  base_bg: "#fafafa"
+
+status:
+  todo:        "#696c77"
+  in_progress: "#986801"
+  done:        "#50a14f"
+
+priority:
+  high:   "#e45649"
+  medium: "#986801"
+  low:    "#4078f2"
+
+gantt:
+  header:           "#4078f2"
+  today_marker:     "#986801"
+  dependency_arrow: "#986801"
+  milestone:        "#a626a4"
+  bar_done:         "#50a14f"
+  bar_in_progress:  "#4078f2"
+  bar_todo:         "#a0a1a7"
+  band_bg:          "#fafafa"
+  highlight_bg:     "#e5e5e6"
+  weekend_bg:       "#eaeaeb"
+  holiday_bg:       "#f0e5e5"
+
+progress:
+  - { min: 100, color: "#50a14f" }
+  - { min: 60,  color: "#4078f2" }
+  - { min: 30,  color: "#986801" }
+  - { min: 0,   color: "#e45649" }
+
+ui:
+  overdue_title:     "#e45649"
+  milestone:         "#a626a4"
+  statusbar_demo:    "#0184bc"
+  statusbar_warning: "#986801"
+  warning_icon:      "#986801"

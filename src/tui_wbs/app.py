@@ -197,7 +197,7 @@ class WBSApp(App):
         Binding("plus", "increment_duration", "Duration +1", show=False),
         Binding("minus", "decrement_duration", "Duration -1", show=False),
         # Theme
-        Binding("T", "toggle_theme", "Toggle Theme", show=False),
+        Binding("T", "cycle_theme", "Cycle Theme", show=False),
         # Cell value increment/decrement
         Binding("alt+up", "increment_cell_value", "Increment Cell", show=False),
         Binding("alt+down", "decrement_cell_value", "Decrement Cell", show=False),
@@ -239,7 +239,8 @@ class WBSApp(App):
         self.set_timer(0.01, self._load_project)
 
     def _load_project(self) -> None:
-        theme.load_theme(self.project_dir)
+        theme.load_theme(self.project_dir, self.config.theme_name)
+        self.register_theme(theme.build_textual_theme())
         if self.demo_mode:
             self._load_demo_project()
             return
@@ -288,7 +289,7 @@ class WBSApp(App):
                 else self.config.views[0].id
             )
         self._rebuild_node_map()
-        self.dark = self.config.dark_mode
+        self.theme = "wbs-theme"
         project_name = self.config.name or self.project_dir.name
         self.title = f"TUI WBS - {project_name}"
         # Load settings and push holidays to Gantt
@@ -591,10 +592,10 @@ class WBSApp(App):
             return
         parts: list[str] = []
         if self.demo_mode:
-            parts.append(f"[bold {theme.STATUSBAR_DEMO.dark}]DEMO[/bold {theme.STATUSBAR_DEMO.dark}]")
+            parts.append(f"[bold {theme.STATUSBAR_DEMO}]DEMO[/bold {theme.STATUSBAR_DEMO}]")
         warning_count = len(self.project.parse_warnings) if self.project else 0
         if warning_count > 0:
-            parts.append(f"[{theme.STATUSBAR_WARNING.dark}]⚠ {warning_count} warning(s)[/{theme.STATUSBAR_WARNING.dark}]")
+            parts.append(f"[{theme.STATUSBAR_WARNING}]⚠ {warning_count} warning(s)[/{theme.STATUSBAR_WARNING}]")
         if self._search_query:
             parts.append(
                 f"Search: '{self._search_query}' "
@@ -1620,12 +1621,25 @@ class WBSApp(App):
             self.notify(f"Date format: {fmt}", severity="information")
 
     # Theme
-    def action_toggle_theme(self) -> None:
-        """Toggle between dark and light theme."""
-        self.dark = not self.dark
-        self.config.dark_mode = self.dark
+    def action_cycle_theme(self) -> None:
+        """Cycle through preset themes."""
+        presets = theme.list_presets()
+        if not presets:
+            return
+        current = self.config.theme_name
+        try:
+            idx = presets.index(current)
+        except ValueError:
+            idx = -1
+        next_idx = (idx + 1) % len(presets)
+        next_name = presets[next_idx]
+        theme.load_theme(self.project_dir, next_name)
+        self.register_theme(theme.build_textual_theme())
+        self.theme = "wbs-theme"
+        self.config.theme_name = next_name
         self._mark_modified()
-        self.notify(f"Theme: {'dark' if self.dark else 'light'}", severity="information")
+        self._refresh_ui()
+        self.notify(f"Theme: {theme.THEME_NAME}", severity="information")
 
     def _on_title_edited(self, node_id: str, new_title: str | None) -> None:
         if new_title is not None and new_title.strip():

@@ -52,4 +52,4 @@ class WarningScreen(ModalScreen[None]):
                 yield Static("No warnings.")
             else:
                 for w in self.warnings:
-                    yield Static(f"[{theme.WARNING_ICON.dark}]⚠[/{theme.WARNING_ICON.dark}] {w}", classes="warning-item")
+                    yield Static(f"[{theme.WARNING_ICON}]⚠[/{theme.WARNING_ICON}] {w}", classes="warning-item")

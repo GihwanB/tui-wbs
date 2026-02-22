@@ -49,10 +49,10 @@ def _make_progress_cell(progress: int | None, bar_width: int = _PROGRESS_BAR_WID
     filled = max(1, round(bar_width * progress / 100)) if progress > 0 else 0
     empty = bar_width - filled
 
-    bar_color = theme.PROGRESS_THRESHOLDS[-1][1].dark
-    for threshold, color_pair in theme.PROGRESS_THRESHOLDS:
+    bar_color = theme.PROGRESS_THRESHOLDS[-1][1]
+    for threshold, color_str in theme.PROGRESS_THRESHOLDS:
         if progress >= threshold:
-            bar_color = color_pair.dark
+            bar_color = color_str
             break
 
     text = Text()
@@ -253,10 +253,10 @@ class WBSTable(Container):
                     and node.start is not None
                     and node.start <= date.today()
                 ):
-                    title_text.stylize(f"{theme.OVERDUE_TITLE.dark} bold", title_start, title_end)
+                    title_text.stylize(f"{theme.OVERDUE_TITLE} bold", title_start, title_end)
                 row.append(title_text)
             elif col_id == "status":
-                color = theme.STATUS_COLORS.get(node.status, theme.STATUS_COLORS[Status.TODO]).dark
+                color = theme.STATUS_COLORS.get(node.status, theme.STATUS_COLORS[Status.TODO])
                 text = Text(f"{node.status_icon} {node.status.value}")
                 text.stylize(color)
                 row.append(text)
@@ -264,7 +264,7 @@ class WBSTable(Container):
                 row.append(node.assignee)
             elif col_id == "priority":
                 from tui_wbs.models import Priority
-                color = theme.PRIORITY_COLORS.get(node.priority, theme.PRIORITY_COLORS[Priority.MEDIUM]).dark
+                color = theme.PRIORITY_COLORS.get(node.priority, theme.PRIORITY_COLORS[Priority.MEDIUM])
                 text = Text(f"{node.priority_icon} {node.priority.value}")
                 text.stylize(color)
                 row.append(text)

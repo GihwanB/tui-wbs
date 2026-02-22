@@ -47,8 +47,12 @@ def load_config(project_dir: Path) -> ProjectConfig:
     project_section = doc.get("project", {})
     config.name = str(project_section.get("name", ""))
     config.default_view = str(project_section.get("default_view", ""))
-    if "dark_mode" in project_section:
-        config.dark_mode = bool(project_section.get("dark_mode", True))
+    if "theme_name" in project_section:
+        config.theme_name = str(project_section.get("theme_name", "default_dark"))
+    elif "dark_mode" in project_section:
+        # Backwards compat: migrate dark_mode → theme_name
+        is_dark = bool(project_section.get("dark_mode", True))
+        config.theme_name = "default_dark" if is_dark else "default_light"
 
     if "date_format" in project_section:
         from tui_wbs.models import DATE_FORMAT_PRESETS, DEFAULT_DATE_FORMAT
@@ -137,7 +141,7 @@ def save_config(project_dir: Path, config: ProjectConfig) -> None:
     project_table = tomlkit.table()
     project_table.add("name", config.name)
     project_table.add("default_view", config.default_view)
-    project_table.add("dark_mode", config.dark_mode)
+    project_table.add("theme_name", config.theme_name)
     project_table.add("date_format", config.date_format)
     project_table.add("default_columns", config.default_columns)
     doc.add("project", project_table)

@@ -130,19 +130,11 @@ class GanttToolbar(Widget):
         self._show_scale = value
         self.refresh()
 
-    @property
-    def _is_dark(self) -> bool:
-        try:
-            return self.app.dark
-        except Exception:
-            return True
-
     def render(self) -> Text:
-        dark = self._is_dark
         text = Text()
 
         today_str = f"Today: {self._today.isoformat()}"
-        text.append(today_str, Style(bold=True, color=theme.GANTT_TODAY_MARKER.resolve(dark)))
+        text.append(today_str, Style(bold=True, color=theme.GANTT_TODAY_MARKER))
 
         self._button_regions = []
         if self._show_scale:
@@ -216,19 +208,12 @@ class GanttHeader(Widget):
         self.refresh()
 
     @property
-    def _is_dark(self) -> bool:
-        try:
-            return self.app.dark
-        except Exception:
-            return True
-
-    @property
     def _band_style(self) -> Style:
-        return Style(bgcolor=theme.GANTT_BAND_BG.resolve(self._is_dark))
+        return Style(bgcolor=theme.GANTT_BAND_BG)
 
     @property
     def _base_style(self) -> Style:
-        return Style(bgcolor=theme.GANTT_BASE_BG.resolve(self._is_dark))
+        return Style(bgcolor=theme.APP_BASE_BG)
 
     def render_line(self, y: int) -> Strip:
         width = max(self.size.width, self._chart_width)
@@ -278,7 +263,7 @@ class GanttHeader(Widget):
             cur += timedelta(days=self._days_per_col)
 
         # 2) Render merged spans with alternating background
-        group_style_base = Style(bold=True, color=theme.GANTT_HEADER.resolve(self._is_dark))
+        group_style_base = Style(bold=True, color=theme.GANTT_HEADER)
         segments: list[Segment] = []
         for gi, (_, label, start, span_w) in enumerate(spans):
             bg = band if gi % 2 == 1 else base
@@ -299,10 +284,8 @@ class GanttHeader(Widget):
         segments: list[Segment] = []
         cur = self._date_start
         col = 0
-        dark = self._is_dark
-        header_style = Style(bold=True, color=theme.GANTT_HEADER.resolve(dark))
-        weekend_header = Style(bold=True, color=theme.GANTT_HEADER.resolve(dark))
-        weekend_bg = Style(bgcolor=theme.GANTT_WEEKEND_BG.resolve(dark))
+        header_style = Style(bold=True, color=theme.GANTT_HEADER)
+        weekend_bg = Style(bgcolor=theme.GANTT_WEEKEND_BG)
         band = self._band_style
         base = self._base_style
         cw = self._col_width
@@ -318,15 +301,10 @@ class GanttHeader(Widget):
                     bg = _band_bg(col, band, base, cw)
                 segments.append(Segment(label, header_style + bg))
             elif self._scale == "week":
-                # 7 chars: week number label centered, with weekend bg on Sat/Sun positions
                 label = f"W{cur.isocalendar()[1]}"
                 padded = label.center(cw)
-                for i, ch in enumerate(padded):
-                    if _is_weekend_col(col + i, self._date_start, self._scale, cw, self._days_per_col):
-                        bg = weekend_bg
-                    else:
-                        bg = _band_bg(col + i, band, base, cw)
-                    segments.append(Segment(ch, header_style + bg))
+                bg = _band_bg(col, band, base, cw)
+                segments.append(Segment(padded, header_style + bg))
             elif self._scale == "week2":
                 label = f"W{cur.isocalendar()[1]}"
                 label = label[:cw].center(cw)
@@ -362,7 +340,7 @@ class GanttHeader(Widget):
     def _render_today_line(self, width: int) -> Strip:
         today_col = self._date_to_col(self._today)
         segments: list[Segment] = []
-        line_style = Style(color=theme.GANTT_TODAY_MARKER.resolve(self._is_dark))
+        line_style = Style(color=theme.GANTT_TODAY_MARKER)
         dim_style = Style(dim=True)
         band = self._band_style
         base = self._base_style
@@ -634,41 +612,32 @@ class GanttView(ScrollView):
         return self._render_bar(node, depth, chart_w, virtual_y)
 
     @property
-    def _is_dark(self) -> bool:
-        try:
-            return self.app.dark
-        except Exception:
-            return True
-
-    @property
     def _band_style(self) -> Style:
-        return Style(bgcolor=theme.GANTT_BAND_BG.resolve(self._is_dark))
+        return Style(bgcolor=theme.GANTT_BAND_BG)
 
     @property
     def _base_style(self) -> Style:
-        return Style(bgcolor=theme.GANTT_BASE_BG.resolve(self._is_dark))
+        return Style(bgcolor=theme.APP_BASE_BG)
 
     def _resolve_bg(self, c: int, band: Style, base: Style, cw: int, weekend_style: Style | None) -> Style:
         """Resolve background style for a character column, with holiday/weekend overlay."""
         bg = _band_bg(c, band, base, cw)
         # Holiday takes priority over weekend
         if self._holidays and _is_holiday_col(c, self._date_start, self._scale, cw, self._days_per_col, self._holidays):
-            dark = self._is_dark
-            return Style(bgcolor=theme.GANTT_HOLIDAY_BG.resolve(dark))
+            return Style(bgcolor=theme.GANTT_HOLIDAY_BG)
         if weekend_style and _is_weekend_col(c, self._date_start, self._scale, cw, self._days_per_col):
             return weekend_style
         return bg
 
     def _render_bar(self, node: WBSNode, depth: int, width: int, row_y: int = 0) -> Strip:
         segments: list[Segment] = []
-        dark = self._is_dark
         band = self._band_style
         base = self._base_style
         cw = self._col_width
-        dep_style = Style(color=theme.GANTT_DEPENDENCY_ARROW.resolve(dark))
+        dep_style = Style(color=theme.GANTT_DEPENDENCY_ARROW)
         today_col = self._date_to_col(self._today)
-        today_style = Style(color=theme.GANTT_TODAY_MARKER.resolve(dark))
-        weekend_style = Style(bgcolor=theme.GANTT_WEEKEND_BG.resolve(dark))
+        today_style = Style(color=theme.GANTT_TODAY_MARKER)
+        weekend_style = Style(bgcolor=theme.GANTT_WEEKEND_BG)
 
         # Row banding: odd rows get band, even rows get base (swap roles)
         row_band = (row_y % 2 == 1)
@@ -684,7 +653,7 @@ class GanttView(ScrollView):
 
         if node.milestone and node.start:
             ms_col = self._date_to_col(node.start)
-            ms_style = Style(color=theme.GANTT_MILESTONE.resolve(dark), bold=True)
+            ms_style = Style(color=theme.GANTT_MILESTONE, bold=True)
             for c in range(width):
                 bg = self._resolve_bg(c, band, base, cw, weekend_style)
                 if c == ms_col:
@@ -709,11 +678,11 @@ class GanttView(ScrollView):
 
             # Color by status
             if node.status == Status.DONE:
-                bar_style = Style(color=theme.GANTT_BAR_DONE.resolve(dark))
+                bar_style = Style(color=theme.GANTT_BAR_DONE)
             elif node.status == Status.IN_PROGRESS:
-                bar_style = Style(color=theme.GANTT_BAR_IN_PROGRESS.resolve(dark))
+                bar_style = Style(color=theme.GANTT_BAR_IN_PROGRESS)
             else:
-                bar_style = Style(color=theme.GANTT_BAR_TODO.resolve(dark), dim=True)
+                bar_style = Style(color=theme.GANTT_BAR_TODO, dim=True)
 
             # Progress fill
             progress = node.progress or 0
@@ -739,7 +708,7 @@ class GanttView(ScrollView):
 
         # 공통 후처리: 커서 주변 행에 underline 테두리 적용
         if needs_border:
-            _border_color = theme.GANTT_HIGHLIGHT_BORDER_COLOR.resolve(dark)
+            _border_color = theme.GANTT_HIGHLIGHT_BORDER_COLOR
             thickness = theme.GANTT_HIGHLIGHT_BORDER_THICKNESS
             use_double = thickness >= 2
             hl_space = Style(underline2=use_double, underline=not use_double, color=_border_color)

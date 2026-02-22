@@ -289,7 +289,7 @@ class ProjectConfig:
 
     name: str = ""
     default_view: str = ""
-    dark_mode: bool = True
+    theme_name: str = "default_dark"
     date_format: str = "YYYY-MM-DD"
     default_columns: list[str] = field(
         default_factory=lambda: [

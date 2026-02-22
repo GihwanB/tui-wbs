@@ -1,0 +1,41 @@
+name: Tokyo Night Light
+dark: false
+
+app:
+  base_bg: "#e6e7ed"
+
+status:
+  todo:        "#6c6e75"
+  in_progress: "#8f5e15"
+  done:        "#385f0d"
+
+priority:
+  high:   "#8c4351"
+  medium: "#8f5e15"
+  low:    "#2959aa"
+
+gantt:
+  header:           "#2959aa"
+  today_marker:     "#8f5e15"
+  dependency_arrow: "#965027"
+  milestone:        "#5a3e8e"
+  bar_done:         "#385f0d"
+  bar_in_progress:  "#2959aa"
+  bar_todo:         "#6c6e75"
+  band_bg:          "#e6e7ed"
+  highlight_bg:     "#c4c8da"
+  weekend_bg:       "#d5d6db"
+  holiday_bg:       "#e8d8e0"
+
+progress:
+  - { min: 100, color: "#385f0d" }
+  - { min: 60,  color: "#2959aa" }
+  - { min: 30,  color: "#8f5e15" }
+  - { min: 0,   color: "#8c4351" }
+
+ui:
+  overdue_title:     "#8c4351"
+  milestone:         "#5a3e8e"
+  statusbar_demo:    "#006c86"
+  statusbar_warning: "#8f5e15"
+  warning_icon:      "#965027"

@@ -39,7 +39,7 @@ class KanbanCard(Static):
         if node.assignee:
             label += f"\n  [dim]{node.assignee}[/dim]"
         if node.milestone:
-            label += f"\n  [{theme.MILESTONE.dark}]◇ Milestone[/{theme.MILESTONE.dark}]"
+            label += f"\n  [{theme.MILESTONE}]◇ Milestone[/{theme.MILESTONE}]"
         classes = kwargs.pop("classes", "")
         if node.milestone:
             classes = f"{classes} card-milestone".strip()

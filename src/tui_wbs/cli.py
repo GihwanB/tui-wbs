@@ -40,7 +40,7 @@ def main(ctx, no_color: bool, demo: bool) -> None:
 
 
 @main.command()
-@click.argument("path", default=".", type=click.Path(exists=True))
+@click.argument("path", default=".", type=click.Path())
 @click.pass_context
 def run(ctx, path: str) -> None:
     """Opens a folder-based WBS project. Reads all *.wbs.md files in PATH."""
@@ -56,6 +56,17 @@ def run(ctx, path: str) -> None:
         app = WBSApp(project_dir=project_dir, no_color=no_color, demo_mode=True)
     else:
         project_dir = Path(path).resolve()
+        if not project_dir.exists():
+            if click.confirm(
+                f"'{project_dir}' 폴더가 존재하지 않습니다. 새로 생성할까요?"
+            ):
+                project_dir.mkdir(parents=True, exist_ok=True)
+                click.echo(f"폴더 생성 완료: {project_dir}")
+            else:
+                raise SystemExit(0)
+        elif not project_dir.is_dir():
+            click.echo(f"오류: '{project_dir}'는 디렉토리가 아닙니다.", err=True)
+            raise SystemExit(1)
         app = WBSApp(project_dir=project_dir, no_color=no_color)
     app.run()
 
@@ -97,17 +108,38 @@ def init_cmd(path: str, name: str) -> None:
 
 
 @main.command("init-theme")
-@click.argument("path", default=".", type=click.Path(exists=True))
-def init_theme_cmd(path: str) -> None:
+@click.argument("path", default=".", type=click.Path())
+@click.option(
+    "--preset",
+    default=None,
+    help="Use a preset theme (e.g. catppuccin_mocha, tokyo_night, one_dark).",
+)
+def init_theme_cmd(path: str, preset: str | None) -> None:
     """Copy default theme to .tui-wbs/theme.yaml for customization."""
-    from tui_wbs.theme import init_theme
+    from tui_wbs.theme import init_theme, list_presets
 
     project_dir = Path(path).resolve()
+    if not project_dir.exists():
+        if click.confirm(
+            f"'{project_dir}' 폴더가 존재하지 않습니다. 새로 생성할까요?"
+        ):
+            project_dir.mkdir(parents=True, exist_ok=True)
+            click.echo(f"폴더 생성 완료: {project_dir}")
+        else:
+            raise SystemExit(0)
+    elif not project_dir.is_dir():
+        click.echo(f"오류: '{project_dir}'는 디렉토리가 아닙니다.", err=True)
+        raise SystemExit(1)
     try:
-        dest = init_theme(project_dir)
-        click.echo(f"Created {dest}")
+        dest = init_theme(project_dir, preset=preset)
+        label = f"preset '{preset}'" if preset else "default"
+        click.echo(f"Created {dest} ({label})")
     except FileExistsError as e:
         click.echo(f"Already exists: {e}", err=True)
+        raise SystemExit(1)
+    except FileNotFoundError as e:
+        click.echo(f"오류: {e}", err=True)
+        click.echo(f"사용 가능한 프리셋: {', '.join(list_presets())}")
         raise SystemExit(1)
 
 

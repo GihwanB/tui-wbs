@@ -1,0 +1,41 @@
+name: One Dark
+dark: true
+
+app:
+  base_bg: "#282c34"
+
+status:
+  todo:        "#7f848e"
+  in_progress: "#e5c07b"
+  done:        "#98c379"
+
+priority:
+  high:   "#e06c75"
+  medium: "#e5c07b"
+  low:    "#61afef"
+
+gantt:
+  header:           "#61afef"
+  today_marker:     "#e5c07b"
+  dependency_arrow: "#d19a66"
+  milestone:        "#c678dd"
+  bar_done:         "#98c379"
+  bar_in_progress:  "#61afef"
+  bar_todo:         "#5c6370"
+  band_bg:          "#282c34"
+  highlight_bg:     "#2c313c"
+  weekend_bg:       "#323842"
+  holiday_bg:       "#352a2c"
+
+progress:
+  - { min: 100, color: "#98c379" }
+  - { min: 60,  color: "#61afef" }
+  - { min: 30,  color: "#e5c07b" }
+  - { min: 0,   color: "#e06c75" }
+
+ui:
+  overdue_title:     "#e06c75"
+  milestone:         "#c678dd"
+  statusbar_demo:    "#56b6c2"
+  statusbar_warning: "#e5c07b"
+  warning_icon:      "#d19a66"
