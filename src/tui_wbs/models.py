@@ -50,7 +50,7 @@ DATE_FORMAT_PRESETS: dict[str, str] = {
     "MMM DD, YYYY": "%b %d, %Y",
     "MM-DD": "%m-%d",
 }
-DEFAULT_DATE_FORMAT = "YYYY-MM-DD"
+DEFAULT_DATE_FORMAT = "MM-DD"
 
 
 def format_date(d: date | None, date_format: str = DEFAULT_DATE_FORMAT) -> str:
@@ -290,7 +290,7 @@ class ProjectConfig:
     name: str = ""
     default_view: str = ""
     theme_name: str = "default_dark"
-    date_format: str = "YYYY-MM-DD"
+    date_format: str = "MM-DD"
     default_columns: list[str] = field(
         default_factory=lambda: [
             "id", "title", "status", "priority", "progress", "assignee", "start", "end", "duration",
@@ -320,9 +320,10 @@ class ProjectConfig:
                 id="default-gantt",
                 name="Gantt",
                 type="table+gantt",
-                columns=["title", "status", "assignee", "start", "end"],
+                columns=["id", "title", "status", "progress", "assignee", "start", "end"],
                 gantt_scale="week",
                 gantt_level=3,
+                sort=SortConfig(field="id", order="asc"),
             )
             kanban_view = ViewConfig(
                 id="default-kanban",

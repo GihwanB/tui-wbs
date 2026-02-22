@@ -116,9 +116,9 @@ class TestFormatDate:
     def test_none_returns_empty(self):
         assert format_date(None) == ""
 
-    def test_default_iso_format(self):
+    def test_default_format(self):
         d = date(2026, 2, 21)
-        assert format_date(d) == "2026-02-21"
+        assert format_date(d) == "02-21"
 
     def test_each_preset(self):
         d = date(2026, 1, 5)

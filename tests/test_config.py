@@ -134,9 +134,9 @@ class TestSaveConfig:
 
 class TestDateFormatConfig:
     def test_default_date_format(self, tmp_path):
-        """No date_format in config → default YYYY-MM-DD."""
+        """No date_format in config → default MM-DD."""
         config = load_config(tmp_path)
-        assert config.date_format == "YYYY-MM-DD"
+        assert config.date_format == "MM-DD"
 
     def test_save_and_load_date_format(self, tmp_path):
         """Round-trip: save date_format, reload, verify."""
@@ -166,7 +166,7 @@ sort = { field = "title", order = "asc" }
             encoding="utf-8",
         )
         config = load_config(tmp_path)
-        assert config.date_format == "YYYY-MM-DD"
+        assert config.date_format == "MM-DD"
 
     def test_all_valid_presets_round_trip(self, tmp_path):
         """Each preset survives save/load."""

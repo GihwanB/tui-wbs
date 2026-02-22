@@ -35,7 +35,7 @@ from tui_wbs.screens.confirm_screen import ConfirmScreen
 from tui_wbs.screens.help_screen import HelpScreen
 from tui_wbs.screens.warning_screen import WarningScreen
 from tui_wbs.widgets.filter_bar import FilterBar
-from tui_wbs.widgets.gantt_chart import GanttChart, GanttToolbar
+from tui_wbs.widgets.gantt_chart import GanttChart, GanttToolbar, GanttView
 from tui_wbs.widgets.kanban_board import KanbanBoard
 from tui_wbs.widgets.view_tabs import ViewTabs
 from tui_wbs.widgets.wbs_table import SyncedDataTable, WBSTable
@@ -204,6 +204,10 @@ class WBSApp(App):
         # Column width
         Binding("ctrl+left", "shrink_column", "Shrink Column", show=False, priority=True),
         Binding("ctrl+right", "grow_column", "Grow Column", show=False, priority=True),
+        Binding("alt+left", "shrink_column", "Shrink Column", show=False),
+        Binding("alt+right", "grow_column", "Grow Column", show=False),
+        # Column width popup
+        Binding("ctrl+w", "column_width_popup", "Column Widths", show=False, priority=True),
     ]
 
     def __init__(self, project_dir: Path, no_color: bool = False, demo_mode: bool = False) -> None:
@@ -500,15 +504,21 @@ class WBSApp(App):
                 pass
             # Sync initial cursor position to Gantt and focus DataTable
             try:
-                from tui_wbs.widgets.gantt_chart import GanttView
-
                 table = self.query_one(WBSTable)
                 dt = table.query_one("#wbs-data-table", SyncedDataTable)
                 gantt = self.query_one(GanttChart)
                 gantt_view = gantt.query_one("#gantt-view", GanttView)
-                gantt_view._highlighted_row = dt.cursor_row
+                # Use highlighted_node_id to find the correct row index
+                # instead of dt.cursor_row which may be stale after rebuild
+                highlighted_id = table.highlighted_node_id
+                row_idx = 0
+                if highlighted_id:
+                    for idx, (n, _, _) in enumerate(table._flat_rows):
+                        if n.id == highlighted_id:
+                            row_idx = idx
+                            break
+                gantt_view._highlighted_row = row_idx
                 gantt_view.refresh()
-                dt.focus()
             except Exception:
                 pass
         else:
@@ -630,8 +640,6 @@ class WBSApp(App):
         view = self._get_active_view()
         if view and view.type == "table+gantt":
             try:
-                from tui_wbs.widgets.gantt_chart import GanttView
-
                 gantt = self.query_one(GanttChart)
                 gantt_view = gantt.query_one("#gantt-view", GanttView)
                 if gantt_view._highlighted_row != event.row_index:
@@ -654,8 +662,6 @@ class WBSApp(App):
         if view and view.type == "table+gantt":
             try:
                 self._scroll_syncing = True
-                from tui_wbs.widgets.gantt_chart import GanttView
-
                 gantt = self.query_one(GanttChart)
                 gantt_view = gantt.query_one("#gantt-view", GanttView)
                 gantt_view.scroll_y = event.scroll_y
@@ -664,7 +670,7 @@ class WBSApp(App):
             # Delay flag reset so bounce-back messages are caught
             self.set_timer(0.05, self._reset_scroll_syncing)
 
-    def on_gantt_view_scroll_y_changed(self, event) -> None:
+    def on_gantt_view_scroll_y_changed(self, event: GanttView.ScrollYChanged) -> None:
         """Synchronize Gantt view vertical scroll to table."""
         if self._scroll_syncing:
             return
@@ -995,18 +1001,11 @@ class WBSApp(App):
             self._refresh_ui()
 
     def on_wbstable_cell_activated(self, event: WBSTable.CellActivated) -> None:
-        """Handle Enter key on a table cell — cycle enum or edit."""
+        """Handle Enter key on a table cell — always open edit mode."""
         node = self._node_map.get(event.node_id)
         if not node:
             return
-        if event.column_id == "status":
-            new_status = self._STATUS_CYCLE.get(node.status, Status.TODO)
-            self._update_node(event.node_id, status=new_status)
-        elif event.column_id == "priority":
-            new_priority = self._PRIORITY_CYCLE.get(node.priority, Priority.MEDIUM)
-            self._update_node(event.node_id, priority=new_priority)
-        else:
-            self._edit_node_column(event.node_id, event.column_id)
+        self._edit_node_column(event.node_id, event.column_id)
 
     def on_view_tabs_edit_view_requested(self, event: ViewTabs.EditViewRequested) -> None:
         self.action_filter_prompt()
@@ -1138,11 +1137,27 @@ class WBSApp(App):
         new_status = self._STATUS_CYCLE.get(node.status, Status.TODO)
         self._update_node(nid, status=new_status)
 
-    # Duration increment/decrement
+    # Duration increment/decrement (or Gantt width ratio in table+gantt view)
     def action_increment_duration(self) -> None:
+        view = self._get_active_view()
+        if view and view.type == "table+gantt":
+            try:
+                gantt = self.query_one(GanttChart)
+                gantt.adjust_width_ratio(0.25)
+            except Exception:
+                pass
+            return
         self._adjust_node_duration(1)
 
     def action_decrement_duration(self) -> None:
+        view = self._get_active_view()
+        if view and view.type == "table+gantt":
+            try:
+                gantt = self.query_one(GanttChart)
+                gantt.adjust_width_ratio(-0.25)
+            except Exception:
+                pass
+            return
         self._adjust_node_duration(-1)
 
     def _adjust_node_duration(self, delta: int) -> None:
@@ -1178,6 +1193,28 @@ class WBSApp(App):
         current = view.column_widths.get(col_id, DEFAULT_COLUMN_WIDTHS.get(col_id, 12))
         new_width = max(4, current + delta)
         view.column_widths[col_id] = new_width
+        self._mark_modified()
+        self._refresh_ui()
+
+    # Column width popup
+    def action_column_width_popup(self) -> None:
+        """Show column width adjustment popup."""
+        view = self._get_active_view()
+        if not view:
+            return
+        from tui_wbs.screens.column_width_screen import ColumnWidthScreen
+        self.push_screen(
+            ColumnWidthScreen(view),
+            callback=self._on_column_widths_changed,
+        )
+
+    def _on_column_widths_changed(self, widths: dict[str, int] | None) -> None:
+        if not widths:
+            return
+        view = self._get_active_view()
+        if not view:
+            return
+        view.column_widths = widths
         self._mark_modified()
         self._refresh_ui()
 
@@ -1226,6 +1263,21 @@ class WBSApp(App):
             self._update_node(nid, progress=new_val)
         elif col_id == "duration":
             self._adjust_node_duration(delta)
+        elif col_id == "status":
+            if delta > 0:
+                new_status = self._STATUS_CYCLE.get(node.status, Status.TODO)
+            else:
+                # Reverse cycle: TODO ← IN_PROGRESS ← DONE
+                reverse = {Status.TODO: Status.DONE, Status.IN_PROGRESS: Status.TODO, Status.DONE: Status.IN_PROGRESS}
+                new_status = reverse.get(node.status, Status.TODO)
+            self._update_node(nid, status=new_status)
+        elif col_id == "priority":
+            if delta > 0:
+                new_priority = self._PRIORITY_CYCLE.get(node.priority, Priority.MEDIUM)
+            else:
+                reverse = {Priority.HIGH: Priority.LOW, Priority.MEDIUM: Priority.HIGH, Priority.LOW: Priority.MEDIUM}
+                new_priority = reverse.get(node.priority, Priority.MEDIUM)
+            self._update_node(nid, priority=new_priority)
 
     # Node CRUD
     def action_add_child(self) -> None:

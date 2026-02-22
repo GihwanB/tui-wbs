@@ -47,12 +47,11 @@ def gantt_project(tmp_path):
 
 class TestScaleConfig:
     def test_all_scales_present(self):
-        assert set(SCALE_CONFIG.keys()) == {"day", "week", "week2", "month", "quarter", "year"}
+        assert set(SCALE_CONFIG.keys()) == {"day", "week", "month", "quarter", "year"}
 
     def test_scale_values(self):
         assert SCALE_CONFIG["day"] == 1
         assert SCALE_CONFIG["week"] == 7
-        assert SCALE_CONFIG["week2"] == 7
         assert SCALE_CONFIG["month"] == 30
         assert SCALE_CONFIG["quarter"] == 91
         assert SCALE_CONFIG["year"] == 365

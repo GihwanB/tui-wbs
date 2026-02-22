@@ -26,7 +26,6 @@ COL_WIDTH = 6  # Default fallback
 COL_WIDTH_MAP: dict[str, int] = {
     "day": 2,
     "week": 7,
-    "week2": 8,
     "month": 6,
     "quarter": 6,
     "year": 6,
@@ -83,14 +82,13 @@ def _is_holiday_col(char_col: int, date_start: date, scale: str, col_width: int,
 SCALE_CONFIG = {
     "day": 1,
     "week": 7,
-    "week2": 7,
     "month": 30,
     "quarter": 91,
     "year": 365,
 }
 
-SCALE_KEYS = ["day", "week", "week2", "month", "quarter", "year"]
-SCALE_LABELS = {"day": "D", "week": "W", "week2": "W2", "month": "M", "quarter": "Q", "year": "Y"}
+SCALE_KEYS = ["day", "week", "month", "quarter", "year"]
+SCALE_LABELS = {"day": "D", "week": "W", "month": "M", "quarter": "Q", "year": "Y"}
 
 
 class GanttToolbar(Widget):
@@ -244,7 +242,7 @@ class GanttHeader(Widget):
         col = 0
         prev_group = None
         while col < width and cur <= self._date_end:
-            if self._scale in ("day", "week", "week2"):
+            if self._scale in ("day", "week"):
                 group = (cur.year, cur.month)
                 label = cur.strftime("%b %y")
             else:  # month, quarter
@@ -305,11 +303,6 @@ class GanttHeader(Widget):
                 padded = label.center(cw)
                 bg = _band_bg(col, band, base, cw)
                 segments.append(Segment(padded, header_style + bg))
-            elif self._scale == "week2":
-                label = f"W{cur.isocalendar()[1]}"
-                label = label[:cw].center(cw)
-                bg = _band_bg(col, band, base, cw)
-                segments.append(Segment(label, header_style + bg))
             elif self._scale == "month":
                 label = cur.strftime("%b")
                 label = label[:cw].center(cw)
@@ -395,6 +388,7 @@ class GanttChart(Container):
         self._today = date.today()
         self._pending_rebuild: bool = False
         self._holidays: set[date] = set()
+        self._width_ratio: float = 1.0
 
     def set_holidays(self, holidays: list[date]) -> None:
         """Set the holidays list for rendering."""
@@ -450,6 +444,11 @@ class GanttChart(Container):
         self._scroll_offset = 0
         self._push_to_view()
 
+    def adjust_width_ratio(self, delta: float) -> None:
+        """Adjust the width ratio by delta (e.g. +0.25 / -0.25)."""
+        self._width_ratio = max(0.25, min(4.0, self._width_ratio + delta))
+        self._push_to_view()
+
     def on_gantt_view_scroll_x_changed(self, event: GanttView.ScrollXChanged) -> None:
         header = self.query_one("#gantt-header", GanttHeader)
         header.scroll_x_offset = int(event.scroll_x)
@@ -466,6 +465,7 @@ class GanttChart(Container):
                 self._scale,
                 self._today,
                 self._scroll_offset,
+                self._width_ratio,
             )
             header.set_holidays(self._holidays)
             header.update_header(
@@ -507,6 +507,7 @@ class GanttView(ScrollView):
 
     DEFAULT_CSS = """
     GanttView {
+        width: 1fr;
         height: 1fr;
         background: $background;
         overflow-y: auto;
@@ -536,13 +537,15 @@ class GanttView(ScrollView):
         scale: str,
         today: date,
         scroll_offset: int,
+        width_ratio: float = 1.0,
     ) -> None:
         self._rows = rows
         self._scale = scale
         self._today = today
         self._scroll_offset = scroll_offset
         self._days_per_col = SCALE_CONFIG.get(scale, 7)
-        self._col_width = COL_WIDTH_MAP.get(scale, COL_WIDTH)
+        base_cw = COL_WIDTH_MAP.get(scale, COL_WIDTH)
+        self._col_width = max(1, int(base_cw * width_ratio))
 
         # Calculate date range from all nodes
         all_dates: list[date] = [today]
@@ -556,8 +559,8 @@ class GanttView(ScrollView):
             self._date_start = min(all_dates) - timedelta(days=self._days_per_col * 2)
             self._date_end = max(all_dates) + timedelta(days=self._days_per_col * 4)
 
-            # week/week2 스케일: 블록이 ISO 주(월-일)와 일치하도록 월요일 정렬
-            if self._scale in ("week", "week2"):
+            # week 스케일: 블록이 ISO 주(월-일)와 일치하도록 월요일 정렬
+            if self._scale == "week":
                 days_since_monday = self._date_start.weekday()  # 0=Mon, 6=Sun
                 if days_since_monday != 0:
                     self._date_start -= timedelta(days=days_since_monday)

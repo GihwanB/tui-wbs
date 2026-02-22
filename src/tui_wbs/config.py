@@ -56,7 +56,7 @@ def load_config(project_dir: Path) -> ProjectConfig:
 
     if "date_format" in project_section:
         from tui_wbs.models import DATE_FORMAT_PRESETS, DEFAULT_DATE_FORMAT
-        raw_fmt = str(project_section.get("date_format", "YYYY-MM-DD"))
+        raw_fmt = str(project_section.get("date_format", DEFAULT_DATE_FORMAT))
         config.date_format = raw_fmt if raw_fmt in DATE_FORMAT_PRESETS else DEFAULT_DATE_FORMAT
 
     default_cols = project_section.get("default_columns")

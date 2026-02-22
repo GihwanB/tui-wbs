@@ -19,7 +19,7 @@ class ViewTabs(Container):
 
     DEFAULT_CSS = """
     ViewTabs {
-        height: 4;
+        height: 3;
         padding: 0;
         overflow: hidden;
         background: $surface-darken-1;
@@ -31,11 +31,11 @@ class ViewTabs(Container):
         border-title-color: $accent;
     }
     ViewTabs Horizontal {
-        height: 2;
+        height: 1;
     }
     ViewTabs .tab-button {
         width: auto;
-        height: 2;
+        height: 1;
         min-width: 8;
         padding: 0 1;
         margin: 0;
@@ -51,7 +51,7 @@ class ViewTabs(Container):
     }
     ViewTabs #add-view-btn {
         width: auto;
-        height: 2;
+        height: 1;
         min-width: 3;
         padding: 0 1;
         color: $text-disabled;

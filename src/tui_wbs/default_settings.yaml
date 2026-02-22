@@ -5,12 +5,12 @@ gantt:
   col_widths:
     day: 2
     week: 7
-    week2: 8
+
     month: 6
     quarter: 6
     year: 6
 
-date_format: "YYYY-MM-DD"
+date_format: "MM-DD"
 
 columns:
   order:

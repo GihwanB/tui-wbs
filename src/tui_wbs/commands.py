@@ -62,6 +62,7 @@ COMMANDS: list[CommandDef] = [
     CommandDef("Filter & Sort", "filter_prompt", "Open filter/sort dialog (f)", "Search"),
     # -- Format --
     CommandDef("Change Date Format", "change_date_format", "Switch date display format", "Format"),
+    CommandDef("Column Widths", "column_width_popup", "Adjust column widths (Ctrl+W)", "Format"),
     # -- Navigation --
     CommandDef("Focus: View Tabs", "focus_tabs", "Focus view tabs panel (1)", "Navigation"),
     CommandDef("Focus: Filter Bar", "focus_filters", "Focus filter bar panel (2)", "Navigation"),
